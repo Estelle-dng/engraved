@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar class="bg-grey-10 row constain">
+    <q-header class="bg-grey-10" elevated>
+      <q-toolbar class="row constrain">
         <q-btn to="/" unelevated>
         <q-avatar class="col justify-start">
             <img src="../assets/logo-engraved-dark.png">
