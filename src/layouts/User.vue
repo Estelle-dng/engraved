@@ -28,6 +28,11 @@
       </q-toolbar>
     </q-header>
 
+        <q-page-container class="bg-grey-12">
+      <!-- This is where pages get injected -->
+      <router-view />
+    </q-page-container>
+
     <!-- (Optional) The Footer -->
     <q-footer class="small-screen-only" elevated>
       <q-tabs 
@@ -56,12 +61,6 @@
         />
       </q-tabs>
     </q-footer>
-
-    <q-page-container class="bg-grey-12">
-      <!-- This is where pages get injected -->
-      <router-view />
-    </q-page-container>
-
   </q-layout>
 </template>
 

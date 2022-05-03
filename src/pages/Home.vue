@@ -39,7 +39,7 @@
           <q-separator class="small-screen-only" vertical inset />
           <q-item-label class="col text-right small-screen-only">  
             <q-icon 
-            class="h-100"
+            class="full-height"
             name="eva-calendar-outline"
             />
             {{post.date | formattedDate}}

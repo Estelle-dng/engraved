@@ -9,9 +9,10 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "axios": "^0.21.1",
     "@quasar/extras": "^1.0.0",
+    "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "md-gum-polyfill": "^1.0.0",
     "quasar": "^1.0.0"
   },
   "devDependencies": {
