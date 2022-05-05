@@ -8,6 +8,9 @@
 // Configuration for your app
 // https://v1.quasar.dev/quasar-cli/quasar-conf-js
 
+let API_LOCAL = 'http://localhost:3000';
+let API_PROD = 'https://engraved-backend.herokuapp.com/';
+
 
 module.exports = function (/* ctx */) {
   return {
@@ -46,6 +49,10 @@ module.exports = function (/* ctx */) {
 
     // Full list of options: https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
+      env: {
+        API: API_LOCAL,
+        //API: API_PROD
+      },
       vueRouterMode: 'hash', // available values: 'hash', 'history'
 
       // transpile: false,

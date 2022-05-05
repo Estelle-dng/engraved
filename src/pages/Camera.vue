@@ -74,7 +74,12 @@
         </q-input>
     </div>
     <div class="row justify-center q-mt-lg">
-       <q-btn color="red" icon="send" label="Post" />
+       <q-btn 
+       @click="addPost()"
+       color="red" 
+       icon="send" 
+       label="Post" 
+       />
     </div>
   </q-page>
 </template>
@@ -100,9 +105,8 @@ export default {
     }
   },
   computed:{
-    locationSupported(){
-      if('geolocation' in navigator) return 
-      true
+    locationSupported() {
+      if ('geolocation' in navigator) return true
       return false
     }
   },
@@ -207,6 +211,21 @@ export default {
         message: 'Could not find location'
       });
       this.locationLoading = false;
+    },
+    addPost(){
+      let newData = new FormData();
+      newData.append('id', this.post.id);
+      newData.append('caption', this.post.caption);
+      newData.append('location', this.post.location);
+      newData.append('date', this.post.date);
+      newData.append('file', this.post.img, this.post.id + '.png');
+
+      this.$axios.post(`${process.env.API}/createPost`, newData).then(
+        response => {
+          console.log('response : ', response);
+        }).catch(err => {
+          console.log('err : ', err);
+        });
     },
   },
   mounted(){

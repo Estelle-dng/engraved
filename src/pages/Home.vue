@@ -1,7 +1,8 @@
 <template>
   <q-page class="constrain q-pa-md">
     <q-infinite-scroll class="row ">
-     <q-card
+      <template v-if="!loadingPosts && posts.length">
+        <q-card
        v-for="post in posts"
        :key="post.id"
        class="card-post q-mb-md col-sm-12 col-xs-12 col-md-4"
@@ -55,8 +56,39 @@
           </q-item-label>
       </q-card-section>
     </q-card>
-    </q-infinite-scroll>
+      </template>
+      <template v-else-if="!loadingPosts && !posts.length">
+        <h5 class="m0-auto" >No posts yet</h5>
+      </template>
+      <template v-else-if="loadingPosts && posts.length">
+        <q-card 
+        class=" card-post col-sm-12 col-xs-12 col-md-4" 
+        flat 
+        bordered
+        >
+          <q-item>
+            <q-item-section avatar>
+              <q-skeleton type="QAvatar" animation="fade" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>
+                <q-skeleton type="text" animation="fade" />
+              </q-item-label>
+              <q-item-label caption>
+                <q-skeleton type="text" animation="fade" />
+              </q-item-label>
+            </q-item-section>
+          </q-item>
 
+          <q-skeleton height="200px" square animation="fade" />
+
+          <q-card-section>
+            <q-skeleton type="text" class="text-subtitle2" animation="fade" />
+            <q-skeleton type="text" width="50%" class="text-subtitle2" animation="fade" />
+          </q-card-section>
+        </q-card>
+      </template>
+    </q-infinite-scroll>
   </q-page>
 </template>
 
@@ -66,16 +98,24 @@ export default {
   name: 'PageHome',
   data(){
     return{
-      posts: []
+      posts: [],
+      loadingPosts: false,
     }
   },
   methods:{
     getPosts(){
-      this.$axios.get('http://localhost:3000/posts').then(response => {
+      this.loadingPosts = true;
+      this.$axios.get(`${process.env.API}/posts`).then(response => {
         this.posts = response.data;
+        this.loadingPosts = false;
       }).catch(err => {
         console.log('error : ' , err);
-      })
+        this.$q.dialog({
+          title: 'Error',
+          message: 'Could not find posts'
+        });
+        this.loadingPosts = false;
+      });
     }
   },
   filters: {
