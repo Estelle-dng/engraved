@@ -50,8 +50,8 @@ module.exports = function (/* ctx */) {
     // Full list of options: https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       env: {
-        //API: API_LOCAL,
-        API: API_PROD
+        API: API_LOCAL,
+        //API: API_PROD
       },
       vueRouterMode: 'hash', // available values: 'hash', 'history'
 
@@ -129,7 +129,7 @@ module.exports = function (/* ctx */) {
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
-        theme_color: '#027be3',
+        theme_color: '#312723',
         icons: [
           {
             src: 'icons/icon-128x128.png',
