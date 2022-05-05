@@ -9,7 +9,7 @@
 // https://v1.quasar.dev/quasar-cli/quasar-conf-js
 
 let API_LOCAL = 'http://localhost:3000';
-let API_PROD = 'https://engraved-backend.herokuapp.com/';
+let API_PROD = 'https://engraved-backend.herokuapp.com';
 
 
 module.exports = function (/* ctx */) {
