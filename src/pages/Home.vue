@@ -8,7 +8,7 @@
        bordered
        flat
      >
-      <q-img :src="post.imgUrl"/>
+      <q-img :src="post.imageUrl"/>
       <q-item>
         <q-item-section avatar>
           <q-avatar>
@@ -66,68 +66,25 @@ export default {
   name: 'PageHome',
   data(){
     return{
-      posts: [
-        {
-          id : 1,
-          date: 1656524034632,
-          location : 'Bordeaux, France',
-          imgUrl: 'https://cdn.quasar.dev/img/mountains.jpg',
-          userName: 'Estelle',
-          userPicture: 'https://cdn.quasar.dev/img/boy-avatar.png',
-          keyWords: ['black work', "animal", 'realist']
-        },
-        {
-          id : 2,
-          date: 1651524034935,
-          location : 'Bordeaux, France',
-          imgUrl: 'https://cdn.quasar.dev/img/mountains.jpg',
-          userName: 'Bib',
-          userPicture: 'https://cdn.quasar.dev/img/boy-avatar.png',
-          keyWords: ['black work', "animal", 'realist']
-        },
-        {
-          id : 3,
-          date: 1651524034935,
-          location : 'Bordeaux, France',
-          imgUrl: 'https://cdn.quasar.dev/img/mountains.jpg',
-          userName: 'Boub',
-          userPicture: 'https://cdn.quasar.dev/img/boy-avatar.png',
-          keyWords:['black work', "animal", 'realist']
-        },
-         {
-          id : 4,
-          date: 1651524034935,
-          location : 'Bordeaux, France',
-          imgUrl: 'https://cdn.quasar.dev/img/mountains.jpg',
-          userName: 'Boub',
-          userPicture: 'https://cdn.quasar.dev/img/boy-avatar.png',
-          keyWords:['black work', "animal", 'realist']
-        },
-         {
-          id : 5,
-          date: 1651524034935,
-          location : 'Bordeaux, France',
-          imgUrl: 'https://cdn.quasar.dev/img/mountains.jpg',
-          userName: 'Boub',
-          userPicture: 'https://cdn.quasar.dev/img/boy-avatar.png',
-          keyWords:['black work', "animal", 'realist']
-        },
-         {
-          id : 6,
-          date: 1651524034935,
-          location : 'Bordeaux, France',
-          imgUrl: 'https://cdn.quasar.dev/img/mountains.jpg',
-          userName: 'Boub',
-          userPicture: 'https://cdn.quasar.dev/img/boy-avatar.png',
-          keyWords:['black work', "animal", 'realist']
-        },
-      ]
+      posts: []
+    }
+  },
+  methods:{
+    getPosts(){
+      this.$axios.get('http://localhost:3000/posts').then(response => {
+        this.posts = response.data;
+      }).catch(err => {
+        console.log('error : ' , err);
+      })
     }
   },
   filters: {
     formattedDate(value){
       return date.formatDate(value, 'D MMM YYYY');
     }
+  },
+  created(){
+    this.getPosts();
   }
 }
 </script>
