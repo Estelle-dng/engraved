@@ -112,7 +112,7 @@ export default {
         console.log('error : ' , err);
         this.$q.dialog({
           title: 'Error',
-          message: 'Could not find posts'
+          message: 'Could not find posts',
         });
         this.loadingPosts = false;
       });
