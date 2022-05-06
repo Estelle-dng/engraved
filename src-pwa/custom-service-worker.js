@@ -15,7 +15,7 @@
   import {ExpirationPlugin} from 'workbox-expiration'
   import {CacheableResponsePlugin} from 'workbox-cacheable-response'
   import {NetworkFirst} from 'workbox-strategies';
-  
+  import {Queue} from 'workbox-background-sync';
   
 /*
   config
@@ -23,13 +23,44 @@
 
   precacheAndRoute(self.__WB_MANIFEST);
 
+  let backgroundSyncSupported = 'sync' in self.registration ? true : false;
+  console.log('backgroundSyncSupported: ', backgroundSyncSupported);
+
+/*
+  queue - createPost
+*/
+
+  let createPostQueue = null;
+  if (backgroundSyncSupported) {
+    createPostQueue = new Queue('createPostQueue', {
+      onSync: async ({queue}) => {
+        let entry;
+        while (entry = await queue.shiftRequest()) {
+          try {
+            await fetch(entry.request);
+            console.log('Replay successful for request', entry.request);
+            const channel = new BroadcastChannel('sw-messages');
+            channel.postMessage({msg: 'offline-post-uploaded'});
+          } catch (error) {
+            console.error('Replay failed for request', entry.request, error);
+    
+            // Put the entry back in the queue and re-throw the error:
+            await queue.unshiftRequest(entry);
+            throw error;
+          }
+        }
+        console.log('Replay complete!');
+      }
+    });
+  }
+
 /*
   caching strategies
 */
 
   registerRoute(
     ({url}) => url.host.startsWith('use.typekit.net'),
-   
+
     new CacheFirst({
       cacheName: 'adobe-fonts',
       plugins: [
@@ -52,3 +83,21 @@
     ({url}) => url.href.startsWith('http'),
     new StaleWhileRevalidate()
   );
+
+/*
+  events - fetch
+*/
+
+  if (backgroundSyncSupported) {
+    self.addEventListener('fetch', (event) => {
+      if (event.request.url.endsWith('/createPost')) {
+        // Clone the request to ensure it's safe to read when
+        // adding to the Queue.
+        const promiseChain = fetch(event.request.clone()).catch((err) => {
+          return createPostQueue.pushRequest({request: event.request});
+        });
+    
+        event.waitUntil(promiseChain);
+      }
+    });
+  }
