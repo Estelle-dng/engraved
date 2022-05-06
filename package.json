@@ -6,7 +6,9 @@
   "author": "Estelle <estelle.denage@gmail.com>",
   "private": true,
   "scripts": {
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"No test specified\" && exit 0",
+    "deploy" : "quasar build -m pwa && firebase deploy",
+    "build" : "quasar build -m pwa"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
