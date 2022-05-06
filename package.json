@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "test": "echo \"No test specified\" && exit 0",
+    "dev" : "quasar dev -m pwa",
     "deploy" : "quasar build -m pwa && firebase deploy",
     "build" : "quasar build -m pwa"
   },
