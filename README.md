@@ -1,4 +1,4 @@
-# Engraved (engraved)
+# Engraved
 
 Engraved, the inked's community hub.
 
