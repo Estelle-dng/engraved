@@ -11,13 +11,22 @@ npm install
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
 ```bash
-quasar dev
+quasar dev // For Webapps
+quasar dev -m pwa // For pwa mode
+```
+
+
+### Start the Backend API
+First, go to the `backend` directory
+```bash
+npm start
 ```
 
 
 ### Build the app for production
 ```bash
-quasar build
+quasar build // For Webapps
+quasar build -pwa mode // For pwa mode
 ```
 
 ### Customize the configuration
