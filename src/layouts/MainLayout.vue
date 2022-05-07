@@ -2,23 +2,42 @@
   <q-layout view="lHh Lpr lFf">
     <q-header class="bg-grey-10" elevated>
       <q-toolbar class="row constrain">
-        <q-btn to="/" unelevated>
-        <q-avatar class="col justify-start">
-            <img src="../assets/logo-engraved-dark.png">
-        </q-avatar>
+
+        <q-btn to="/"
+        class="col-2"
+        unelevated
+        >
+          <q-avatar class="col justify-start">
+              <img src="../assets/logo-engraved-dark.png">
+          </q-avatar>
         </q-btn>
+
         <q-separator class="large-screen-only" dark vertical inset />
         <q-toolbar-title class="title col text-center text-sm-left">
           Engraved
         </q-toolbar-title>
+
+
+       <q-tabs
+       class="col-2"
+       v-if="userIsTattoist"
+       >
+          <q-route-tab
+            class="justify-end"
+            to="/camera"
+            icon="eva-camera-outline"
+            name="Camera"
+          />
+        </q-tabs>
         <q-tabs class="col-2">
           <q-route-tab
             class="justify-end"
-            to="/Settings"
+            to="/settings"
             icon="eva-settings-2-outline"
             name="Settings"
           />
         </q-tabs>
+
       </q-toolbar>
     </q-header>
 
@@ -28,16 +47,16 @@
 
     <q-footer elevated>
 
-      <div 
+      <div
       v-if="showAppInstallBanner"
       class="bg-red">
-        <q-banner 
-        inline-actions 
+        <q-banner
+        inline-actions
         dense
         class="bg-red text-white constrain"
         >
           <template v-slot:avatar>
-            <q-avatar 
+            <q-avatar
             text-color="grey-10"
             icon="eva-download-outline"
             font-size="22px"
@@ -80,22 +99,22 @@
           name="Home"
         />
         <q-route-tab
-          to="/Search"
+          to="/search"
           icon="eva-search-outline"
           name="Search"
           />
         <q-route-tab
-          to="/Notifications"
+          to="/notifications"
           icon="eva-bell-outline"
           name="Notifications"
         />
         <q-route-tab
-          to="/Profile"
+          to="/profile"
           icon="eva-person-outline"
           name="Profile"
         />
       </q-tabs>
-      
+
     </q-footer>
   </q-layout>
 </template>
@@ -109,6 +128,7 @@ export default {
   data () {
     return {
       showAppInstallBanner : false,
+      userIsTattoist : true,
     }
   },
   methods: {
@@ -146,7 +166,7 @@ export default {
         setTimeout(() => {
           this.showAppInstallBanner = true
         }, 3000);
-      });    
+      });
     }
   },
 }
