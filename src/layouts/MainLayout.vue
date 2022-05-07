@@ -75,8 +75,8 @@
 
               <q-item
                 v-ripple
-                name="Home"
-                to="/"
+                name="Search"
+                to="/search"
                 clickable
               >
                 <q-item-section avatar>
@@ -91,8 +91,8 @@
 
               <q-item
                 v-ripple
-                name="Home"
-                to="/"
+                name="Notificatins"
+                to="/notifications"
                 clickable
               >
                 <q-item-section avatar>
@@ -107,8 +107,8 @@
 
               <q-item
                 v-ripple
-                name="Home"
-                to="/"
+                name="Profile"
+                to="/profile"
                 clickable
               >
                 <q-item-section avatar>
@@ -123,8 +123,8 @@
 
               <q-item
                 v-ripple
-                name="Home"
-                to="/"
+                name="Settings"
+                to="/settings"
                 clickable
               >
                 <q-item-section avatar>
@@ -140,8 +140,8 @@
               <q-item
                 v-if="userIsTattoist"
                 v-ripple
-                name="Home"
-                to="/"
+                name="Camera"
+                to="/camera"
                 clickable
               >
                 <q-item-section avatar>
