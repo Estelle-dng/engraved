@@ -2,34 +2,29 @@
   <q-layout view="lHh Lpr lFf">
     <q-header class="bg-grey-10" elevated>
       <q-toolbar class="row constrain">
-
         <q-btn to="/"
-        class="col-2"
         unelevated
         >
           <q-avatar class="col justify-start">
               <img src="../assets/logo-engraved-dark.png">
           </q-avatar>
         </q-btn>
-
         <q-separator class="large-screen-only" dark vertical inset />
         <q-toolbar-title class="title col text-center text-sm-left">
           Engraved
         </q-toolbar-title>
-
-
        <q-tabs
-       class="col-2"
+       class="small-screen-only"
        v-if="userIsTattoist"
        >
-          <q-route-tab
-            class="justify-end"
-            to="/camera"
-            icon="eva-camera-outline"
-            name="Camera"
-          />
+        <q-route-tab
+          class="justify-end"
+          to="/camera"
+          icon="eva-camera-outline"
+          name="Camera"
+        />
         </q-tabs>
-        <q-tabs class="col-2">
+        <q-tabs class="small-screen-only">
           <q-route-tab
             class="justify-end"
             to="/settings"
@@ -38,8 +33,130 @@
           />
         </q-tabs>
 
+        <q-btn
+          @click="drawer = !drawer"
+          class="large-screen-only"
+          icon="menu"
+          dense
+          flat
+          round
+        />
+
       </q-toolbar>
     </q-header>
+
+    <q-drawer
+        v-model="drawer"
+        :width="200"
+        :breakpoint="500"
+        side='right'
+        overlay
+        elevated
+        content-class="bg-grey-3 large-screen-only"
+      >
+        <q-scroll-area class="fit">
+          <q-list>
+            <template>
+              <q-item
+                v-ripple
+                name="Home"
+                to="/"
+                clickable
+              >
+                <q-item-section avatar>
+                  <q-icon name="eva-home-outline" />
+                </q-item-section>
+                <q-item-section>
+                  Home
+                </q-item-section>
+              </q-item>
+
+              <q-separator/>
+
+              <q-item
+                v-ripple
+                name="Home"
+                to="/"
+                clickable
+              >
+                <q-item-section avatar>
+                  <q-icon name="eva-search-outline" />
+                </q-item-section>
+                <q-item-section>
+                  Search
+                </q-item-section>
+              </q-item>
+
+              <q-separator/>
+
+              <q-item
+                v-ripple
+                name="Home"
+                to="/"
+                clickable
+              >
+                <q-item-section avatar>
+                  <q-icon name="eva-bell-outline" />
+                </q-item-section>
+                <q-item-section>
+                  Notifications
+                </q-item-section>
+              </q-item>
+
+              <q-separator/>
+
+              <q-item
+                v-ripple
+                name="Home"
+                to="/"
+                clickable
+              >
+                <q-item-section avatar>
+                  <q-icon name="eva-person-outline" />
+                </q-item-section>
+                <q-item-section>
+                  Profile
+                </q-item-section>
+              </q-item>
+
+               <q-separator/>
+
+              <q-item
+                v-ripple
+                name="Home"
+                to="/"
+                clickable
+              >
+                <q-item-section avatar>
+                  <q-icon name="eva-settings-2-outline" />
+                </q-item-section>
+                <q-item-section>
+                  Settings
+                </q-item-section>
+              </q-item>
+
+               <q-separator/>
+
+              <q-item
+                v-if="userIsTattoist"
+                v-ripple
+                name="Home"
+                to="/"
+                clickable
+              >
+                <q-item-section avatar>
+                  <q-icon name="eva-camera-outline" />
+                </q-item-section>
+                <q-item-section>
+                  Add post
+                </q-item-section>
+              </q-item>
+              <q-separator />
+            </template>
+
+          </q-list>
+        </q-scroll-area>
+      </q-drawer>
 
     <q-page-container class="bg-grey-12">
       <router-view />
@@ -129,6 +246,7 @@ export default {
     return {
       showAppInstallBanner : false,
       userIsTattoist : true,
+      drawer: false,
     }
   },
   methods: {
