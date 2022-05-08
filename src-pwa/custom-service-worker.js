@@ -16,15 +16,18 @@
   import {CacheableResponsePlugin} from 'workbox-cacheable-response'
   import {NetworkFirst} from 'workbox-strategies';
   import {Queue} from 'workbox-background-sync';
-  
+
 /*
   config
 */
 
   precacheAndRoute(self.__WB_MANIFEST);
 
+  // disable workbox logs
+  //self.__WB_DISABLE_DEV_LOGS = true
+
   let backgroundSyncSupported = 'sync' in self.registration ? true : false;
-  console.log('backgroundSyncSupported: ', backgroundSyncSupported);
+  //console.log('backgroundSyncSupported: ', backgroundSyncSupported);
 
 /*
   queue - createPost
@@ -38,18 +41,20 @@
         while (entry = await queue.shiftRequest()) {
           try {
             await fetch(entry.request);
+
             console.log('Replay successful for request', entry.request);
-            const channel = new BroadcastChannel('sw-messages');
-            channel.postMessage({msg: 'offline-post-uploaded'});
+
           } catch (error) {
             console.error('Replay failed for request', entry.request, error);
-    
+
             // Put the entry back in the queue and re-throw the error:
             await queue.unshiftRequest(entry);
             throw error;
           }
         }
-        console.log('Replay complete!');
+        const channel = new BroadcastChannel('sw-messages');
+        channel.postMessage({message: 'offline-post-uploaded'});
+        console.log('Replay complete! :)');
       }
     });
   }
@@ -60,8 +65,7 @@
 
   registerRoute(
     ({url}) => url.host.startsWith('use.typekit.net'),
-
-    new CacheFirst({
+      new CacheFirst({
       cacheName: 'adobe-fonts',
       plugins: [
         new ExpirationPlugin({
@@ -90,14 +94,20 @@
 
   if (backgroundSyncSupported) {
     self.addEventListener('fetch', (event) => {
+
       if (event.request.url.endsWith('/createPost')) {
-        // Clone the request to ensure it's safe to read when
-        // adding to the Queue.
-        const promiseChain = fetch(event.request.clone()).catch((err) => {
-          return createPostQueue.pushRequest({request: event.request});
-        });
-    
-        event.waitUntil(promiseChain);
-      }
-    });
-  }
+        // Clone the request to ensure it's safe to read when adding to the Queue.
+        const promiseChain = async () => {
+          try {
+            const response = await fetch(event.request.clone());
+            return response;
+          } catch (error) {
+            console.log('error request backgroundSync : ', event.request);
+            await createPostQueue.pushRequest({request: event.request});
+            return error;
+          }
+        };
+          event.respondWith(promiseChain());
+        }
+      })
+  };

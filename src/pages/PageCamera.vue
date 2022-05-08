@@ -1,7 +1,7 @@
 <template>
   <q-page class="constrain-camera q-pa-md">
     <div class="camera-frame q-pa-md">
-     <video 
+     <video
      v-show="!imageCaptured"
      ref="capture"
      class="full-width"
@@ -15,13 +15,13 @@
      />
     </div>
     <div class="text-center q-mt-md">
-      <q-btn 
+      <q-btn
       v-show='hasCameraSupport'
       @click = 'captureImg'
       :disable="imageCaptured"
-      round color="grey-10" 
-      icon="eva-camera" 
-      size="lg" 
+      round color="grey-10"
+      icon="eva-camera"
+      size="lg"
       />
     </div>
     <p class="text-center q-my-lg">or</p>
@@ -49,17 +49,17 @@
       </q-file>
     </div>
     <div class="row justify-center q-ma-md">
-        <q-input 
-        v-model="post.caption" 
-        label="Caption *" 
+        <q-input
+        v-model="post.caption"
+        label="Caption *"
         class="col col-sm-8"
         />
     </div>
     <div class="row justify-center q-ma-md">
-        <q-input 
-        v-model="post.location" 
+        <q-input
+        v-model="post.location"
         :loading="locationLoading"
-        label="Location" 
+        label="Location"
         class="col col-sm-8"
         >
           <template v-slot:append>
@@ -75,12 +75,12 @@
         </q-input>
     </div>
     <div class="row justify-center q-mt-lg">
-       <q-btn 
+       <q-btn
        @click="addPost()"
        :disable="!post.caption|| !post.img"
-       color="red" 
-       icon="send" 
-       label="Post" 
+       color="red"
+       icon="send"
+       label="Post"
        />
     </div>
   </q-page>
@@ -91,7 +91,7 @@ import { uid } from 'quasar';
 require('md-gum-polyfill');
 export default {
   name: 'PageCamera',
-  data() { 
+  data() {
     return {
       post :{
         id : uid(),
@@ -108,9 +108,13 @@ export default {
   },
   computed:{
     locationSupported() {
-      if ('geolocation' in navigator) return true
-      return false
-    }
+      if ('geolocation' in navigator) return true;
+      return false;
+    },
+    backgroundSyncSupported() {
+      if ('serviceWorker' in navigator && 'SyncManager' in window) return true;
+      return false;
+    },
   },
   methods: {
     initCamemra(){
@@ -122,11 +126,11 @@ export default {
         this.hasCameraSupport = false;
       });
     },
-    captureImg() {
+     captureImg() {
       let video = this.$refs.capture;
       let canvas = this.$refs.canvas;
       canvas.width = video.getBoundingClientRect().width;
-      canvas.height = video.getBoundingClientRect().height;   
+      canvas.height = video.getBoundingClientRect().height;
       let context =  canvas.getContext('2d');
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
       this.imageCaptured = true;
@@ -150,8 +154,8 @@ export default {
           }
           img.src = event.target.result;
       }
-      reader.readAsDataURL(file);     
-      
+      reader.readAsDataURL(file);
+
     },
     disableCamera(){
       this.$refs.capture.srcObject.getVideoTracks().forEach(track => {
@@ -214,35 +218,41 @@ export default {
       });
       this.locationLoading = false;
     },
-    addPost(){
+   addPost() {
       this.$q.loading.show()
-      let newData = new FormData();
-      newData.append('id', this.post.id);
-      newData.append('caption', this.post.caption);
-      newData.append('location', this.post.location);
-      newData.append('date', this.post.date);
-      newData.append('file', this.post.img, this.post.id + '.png');
 
-      this.$axios.post(`${process.env.API}/createPost`, newData).then(
-        response => {
-          console.log('response : ', response);
-          this.$router.push('/');
-          this.$q.notify({
-          message: 'Post created.',
+      let formData = new FormData()
+      formData.append('id', this.post.id)
+      formData.append('caption', this.post.caption)
+      formData.append('location', this.post.location)
+      formData.append('date', this.post.date)
+      formData.append('file', this.post.img, this.post.id + '.png')
+
+
+      this.$axios.post(`${ process.env.API }/createPost`, formData).then(response => {
+        console.log('response: ', response);
+        this.$router.push('/');
+        this.$q.notify({
+          message: 'Post created!',
           actions: [
             { label: 'Dismiss', color: 'white' }
           ]
         })
-        this.$q.loading.hide();
-        }).catch(err => {
-          console.log('err : ', err);
+        this.$q.loading.hide()
+      }).catch(err => {
+        if (!navigator.onLine && this.backgroundSyncSupported) {
+          this.$q.notify('Post created offline');
+          this.$router.push('/');
+        }
+        else {
           this.$q.dialog({
             title: 'Error',
-            message: 'Sorry, could not create post.'
-          });
-          this.$q.loading.hide();
-        });
-    },
+            message: 'Sorry, could not create post!'
+          })
+        }
+        this.$q.loading.hide();
+      })
+    }
   },
   mounted(){
     this.initCamemra();
@@ -251,7 +261,7 @@ export default {
     if(this.hasCameraSupport){
       this.disableCamera();
     }
-  } 
+  }
 }
 </script>
 

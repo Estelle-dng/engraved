@@ -156,10 +156,12 @@
 
           </q-list>
         </q-scroll-area>
-      </q-drawer>
+    </q-drawer>
 
     <q-page-container class="bg-grey-12">
-      <router-view />
+      <keep-alive :include="['PageHome']">
+        <router-view />
+      </keep-alive>
     </q-page-container>
 
     <q-footer elevated>
