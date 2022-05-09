@@ -180,7 +180,7 @@ export default {
           }
         });
       }
-    },
+    }
   },
   filters: {
     formattedDate(value){

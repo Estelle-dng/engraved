@@ -41,12 +41,9 @@
         while (entry = await queue.shiftRequest()) {
           try {
             await fetch(entry.request);
-
             console.log('Replay successful for request', entry.request);
-
           } catch (error) {
             console.error('Replay failed for request', entry.request, error);
-
             // Put the entry back in the queue and re-throw the error:
             await queue.unshiftRequest(entry);
             throw error;
@@ -54,7 +51,7 @@
         }
         const channel = new BroadcastChannel('sw-messages');
         channel.postMessage({message: 'offline-post-uploaded'});
-        console.log('Replay complete! :)');
+        console.log('Replay complete!');
       }
     });
   }
