@@ -1,4 +1,5 @@
 <template>
+
   <q-page class="constrain q-pa-md">
     <q-infinite-scroll class="row ">
       <template v-if="!loadingPosts && posts.length">
@@ -113,8 +114,8 @@ export default {
     }
   },
   computed: {
-    serciveWorkerSupported(){
-       if ('serciveWorker' in navigator) return true;
+    serviceWorkerSupported(){
+      if ('serviceWorker' in navigator) return true;
       return false;
     }
   },
@@ -173,14 +174,13 @@ export default {
       if (this.serviceWorkerSupported) {
         const channel = new BroadcastChannel('sw-messages');
         channel.addEventListener('message', event => {
-          console.log('Received', event.data);
           if (event.data.message == 'offline-post-uploaded') {
             let offlinePostCount = this.posts.filter(post => post.offline == true).length;
             this.posts[offlinePostCount - 1].offline = false;
           }
         });
       }
-    }
+    },
   },
   filters: {
     formattedDate(value){
