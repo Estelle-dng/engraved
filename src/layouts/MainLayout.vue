@@ -293,7 +293,7 @@ export default {
 </script>
 
 <style lang="scss">
-.q-avatar .q-avatar__content{
+/* .q-avatar .q-avatar__content{
   justify-content: start;
-}
+} */
 </style>

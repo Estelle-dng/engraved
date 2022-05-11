@@ -24,7 +24,7 @@
   precacheAndRoute(self.__WB_MANIFEST);
 
   // disable workbox logs
-  //self.__WB_DISABLE_DEV_LOGS = true
+  self.__WB_DISABLE_DEV_LOGS = true
 
   let backgroundSyncSupported = 'sync' in self.registration ? true : false;
   //console.log('backgroundSyncSupported: ', backgroundSyncSupported);
@@ -86,25 +86,90 @@
   );
 
 /*
+  events - push notification
+*/
+
+  self.addEventListener('push', event => {
+    //console.log('Push message received:', event)
+    if (event.data) {
+      let data = JSON.parse(event.data.text())
+      event.waitUntil(
+        self.registration.showNotification(
+          data.title,
+          {
+            body: data.body,
+            icon: 'icons/icon-128x128.png',
+            badge: 'icons/icon-128x128.png',
+            data: {
+              openUrl: data.openUrl
+            }
+          }
+        )
+      )
+    }
+  })
+
+/*
   events - fetch
 */
 
   if (backgroundSyncSupported) {
     self.addEventListener('fetch', (event) => {
+      if (event.request.url.endsWith('/createPost') && !self.navigator.onLine) {
 
-      if (event.request.url.endsWith('/createPost')) {
-        // Clone the request to ensure it's safe to read when adding to the Queue.
-        const promiseChain = async () => {
-          try {
-            const response = await fetch(event.request.clone());
-            return response;
-          } catch (error) {
-            console.log('error request backgroundSync : ', event.request);
-            await createPostQueue.pushRequest({request: event.request});
-            return error;
-          }
-        };
+          // Clone the request to ensure it's safe to read when adding to the Queue.
+          const promiseChain = async () => {
+            try {
+              const response = await fetch(event.request.clone());
+              return response;
+            } catch (error) {
+              console.log('error request backgroundSync : ', event.request);
+              await createPostQueue.pushRequest({request: event.request});
+              return error;
+            }
+          };
           event.respondWith(promiseChain());
-        }
-      })
-  };
+        /*
+          const promiseChain = fetch(event.request.clone()).catch((err) => {
+            return createPostQueue.pushRequest({request: event.request});
+          });
+         */
+
+      }
+    })
+  }
+
+
+/*
+  events - notifications
+*/
+
+  self.addEventListener('notificationclick', event => {
+    let notification = event.notification
+    let action = event.action
+
+    if (action == 'hello') {
+      console.log('Hello button was clicked')
+    }
+    else {
+      event.waitUntil(
+        clients.matchAll().then(clis => {
+          let clientUsingApp = clis.find(cli => {
+            return cli.visibilityState === 'visible'
+          })
+          if (clientUsingApp) {
+            clientUsingApp.navigate(notification.data.openUrl)
+            clientUsingApp.focus()
+          }
+          else {
+            clients.openWindow(notification.data.openUrl)
+          }
+        }).catch(err => {console.log('notif click error : ', err);})
+      )
+    }
+    notification.close()
+  })
+
+  self.addEventListener('notificationclose', event => {
+    console.log('notification was closed : ', event);
+  });

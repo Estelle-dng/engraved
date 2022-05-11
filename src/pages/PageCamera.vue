@@ -218,7 +218,7 @@ export default {
       });
       this.locationLoading = false;
     },
-   addPost() {
+    addPost() {
       this.$q.loading.show()
 
       let formData = new FormData()
@@ -228,9 +228,8 @@ export default {
       formData.append('date', this.post.date)
       formData.append('file', this.post.img, this.post.id + '.png')
 
-
       this.$axios.post(`${ process.env.API }/createPost`, formData).then(response => {
-        console.log('response: ', response);
+        //console.log('response: ', response);
         this.$router.push('/');
         this.$q.notify({
           message: 'Post created!',

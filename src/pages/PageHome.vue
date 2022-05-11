@@ -1,6 +1,49 @@
 <template>
 
   <q-page class="constrain q-pa-md">
+    <div
+      v-if="showNotificationsBanner && pushNotificationsSupported"
+      class="q-ma-sm">
+        <q-banner
+        dense
+        inline-actions
+        class="bg-grey-10 text-white constrain"
+        >
+          <template v-slot:avatar>
+            <q-avatar
+            text-color="grey-10 bg-red"
+            icon="eva-bell-outline"
+            font-size="22px"
+            />
+          </template>
+            Enable notifications ?
+          <template v-slot:action>
+           <q-btn
+              @click="enableNotifications()"
+              class="q-px-sm"
+              label="Yes"
+              dense
+              flat
+            />
+            <q-btn
+            @click="showNotificationsBanner = false"
+              class="q-px-sm"
+              label="Later"
+              dense
+              flat
+            />
+            <q-btn
+              @click="neverShowNotificationsBanner()"
+              class="q-px-sm"
+              label="Never"
+              dense
+              flat
+            />
+          </template>
+        </q-banner>
+      </div>
+
+
     <q-infinite-scroll class="row ">
       <template v-if="!loadingPosts && posts.length">
         <q-card
@@ -22,7 +65,7 @@
       <q-item>
         <q-item-section avatar>
           <q-avatar>
-            <img :src="post.userPicture">
+            <img src="icons/icon-128x128.png"> <!-- :src="post.userPicture" -->
           </q-avatar>
         </q-item-section>
         <q-item-section>
@@ -105,17 +148,23 @@
 <script>
 import { date } from 'quasar';
 import { openDB } from 'idb';
+let qs = require('qs');
 export default {
   name: 'PageHome',
   data(){
     return{
       posts: [],
       loadingPosts: false,
+      showNotificationsBanner : false,
     }
   },
   computed: {
     serviceWorkerSupported(){
       if ('serviceWorker' in navigator) return true;
+      return false;
+    },
+    pushNotificationsSupported(){
+      if ('PushManager' in window) return true;
       return false;
     }
   },
@@ -139,7 +188,6 @@ export default {
         });
 
     },
-
     getOfflinePosts() {
       let db = openDB('workbox-background-sync').then(db => {
         db.getAll('requests').then(failedRequests => {
@@ -180,7 +228,88 @@ export default {
           }
         });
       }
-    }
+    },
+    initNotificationsBanner(){
+      let neverShowNotificationsBanner = this.$q.localStorage.getItem('neverShowNotificationsBanner');
+
+      if (!neverShowNotificationsBanner) {
+        this.showNotificationsBanner = true;
+      }
+    },
+    enableNotifications() {
+      if(this.pushNotificationsSupported){
+        Notification.requestPermission(result => {
+          this.neverShowNotificationsBanner();
+          if(result == 'granted'){
+            //this.displayGrantedNotifications();
+            this.checkForExistingPushSubscription();
+          }
+        });
+      }
+    },
+    checkForExistingPushSubscription(){
+      if(this.serviceWorkerSupported && this.pushNotificationsSupported){
+        let reg;
+        navigator.serviceWorker.ready.then(swreg => {
+          reg = swreg;
+          swreg.pushManager.getSubscription()
+        }).then(sub => {
+          if(!sub){
+            //Create a new subscription
+            this.createPushSubscription(reg);
+          }
+        });
+      };
+    },
+    createPushSubscription(registration){
+      let vapidPublicKey = 'BK9haeBXyHenav_5-1gTT-e7rAwvSFwEWSIAIe1EJrLUKfzfiTA3vGNf5n1yuhIA_5qQq8ySZL3qVDtL91eso-s';
+      registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: vapidPublicKey
+      }).then(newSub => {
+        //console.log('new subscription : ', newSub);
+        let newSubData = newSub.toJSON();
+        let newSubDataQS = qs.stringify(newSubData);
+        return this.$axios.post(`${process.env.API}/createSubscription?${newSubDataQS}`)
+      }).then(response => {
+        //console.log(response);
+        this.displayGrantedNotifications();
+      }).catch(err => {
+        console.log(err);
+      });
+
+    },
+    neverShowNotificationsBanner() {
+      this.showNotificationsBanner = false
+      this.$q.localStorage.set('neverShowNotificationsBanner', true)
+    },
+    displayGrantedNotifications(){
+      /* new Notification('You are now subscribed to notifications !', {
+        body: 'Thanks for subscribing',
+        icon: 'icons/icon-128x128.png',
+        tag: 'confirm-notification',
+        renotify: true,
+      }); */
+      if(this.serviceWorkerSupported && this.pushNotificationsSupported){
+        navigator.serviceWorker.ready.then(swreg => {
+          swreg.showNotification('You are now subscribed to notifications !', {
+            body: 'Thanks for subscribing',
+            icon: 'icons/icon-128x128.png',
+            image: 'icons/icon-128x128.png',
+            badge: 'icons/icon-128x128.png',
+            lang: 'en-US',
+            vibrate: [100, 50, 200],
+            actions: [
+              {
+                action : 'hello',
+                title : 'hello',
+                icon : 'icons/icon-128x128.png'
+              },
+            ]
+          });
+        });
+      }
+    },
   },
   filters: {
     formattedDate(value){
@@ -189,6 +318,7 @@ export default {
   },
   activated() {
     this.getPosts();
+    this.initNotificationsBanner();
   },
   created(){
     this.listenForOfflinePost();
