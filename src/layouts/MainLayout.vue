@@ -282,7 +282,7 @@ export default {
         // Stash the event so it can be triggered later.
         deferredPrompt = e;
         // Update UI notify the user they can install the PWA
-        console.log(`'beforeinstallprompt' event was fired.`);
+        //console.log(`'beforeinstallprompt' event was fired.`);
         setTimeout(() => {
           this.showAppInstallBanner = true
         }, 3000);
