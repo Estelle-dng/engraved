@@ -152,6 +152,22 @@
                 </q-item-section>
               </q-item>
               <q-separator />
+
+               <q-separator/>
+
+              <q-item
+                v-ripple
+                name="Login"
+                to="/auth"
+                clickable
+              >
+                <q-item-section avatar>
+                  <q-icon name="eva-plus-outline" />
+                </q-item-section>
+                <q-item-section>
+                  Login / Register
+                </q-item-section>
+              </q-item>
             </template>
 
           </q-list>
@@ -289,6 +305,14 @@ export default {
       });
     }
   },
+  logout() {
+    firebase.auth().signOut()
+    this.$router.push('/')
+      .then(() => {
+      this.$q.notify({message: 'Sign Out Success.'})
+    })
+    .catch(error =>  console.log('error',error))
+  }
 }
 </script>
 

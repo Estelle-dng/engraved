@@ -1,6 +1,7 @@
 <template>
 
   <q-page class="constrain q-pa-md">
+    <!-- Notification banner -->
     <div
       v-if="showNotificationsBanner && pushNotificationsSupported"
       class="q-ma-sm">
@@ -41,8 +42,7 @@
             />
           </template>
         </q-banner>
-      </div>
-
+    </div>
 
     <q-infinite-scroll class="row ">
       <template v-if="!loadingPosts && posts.length">

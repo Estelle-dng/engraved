@@ -40,6 +40,8 @@ h1, h2, h3, h4, h5, h6, .title{
     margin: 0 auto;
 }
 
+.d-flex{ display: flex !important;}
+
 .m0-auto{margin: 0 auto;}
 
 @media (max-width: $breakpoint-sm-min) {

@@ -53,6 +53,20 @@ const routes = [
       name: 'Settings',
       meta:{
         title: "Settings"
+      }},
+
+      { path: '/users',
+      component: () => import('src/pages/PageUsers.vue'),
+      name: 'Users',
+      meta:{
+        title: "Users"
+      }},
+
+      { path: '/auth',
+      component: () => import('src/pages/PageAuth.vue'),
+      name: 'Auth',
+      meta:{
+        title: "Auth"
       }}
     ]
   },
