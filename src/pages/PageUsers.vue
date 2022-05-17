@@ -5,7 +5,7 @@
         <q-toolbar-title>Users</q-toolbar-title>
       </q-toolbar>
 
-      <q-list bordered v-if="!loadingPosts && users.length">
+      <q-list bordered>
         <q-item
           v-for="user in users"
           :key="user.id"
@@ -33,7 +33,6 @@
           </q-item-section>
         </q-item>
       </q-list>
-      <div v-if="!loadingPosts && !users.length">No users yet</div>
     </div>
   </q-page>
 </template>
@@ -48,28 +47,32 @@ export default {
     }
   },
   methods: {
-      getUsers(){
+    getUsers(){
       this.loadingUsers = true;
 
-        this.$axios.get(`${process.env.API}/users`).then(response => {
-          this.users = response.data;
-          if(!navigator.onLine){this.getOfflineUsers();}
+      this.$axios.get(`${process.env.API}/users`).then(response => {
+        console.log(response);
+        this.users = response.data;
+        if(!navigator.onLine){this.getOfflineUsers();}
+        this.loadingUsers = false;
+      }
+      ).catch(err => {
+        if(navigator.onLine){
+          this.$q.dialog({
+          title: 'Error',
+          message: 'Could not find users',
+        });
           this.loadingUsers = false;
         }
-        ).catch(err => {
-          if(navigator.onLine){
-            this.$q.dialog({
-            title: 'Error',
-            message: 'Could not find users',
-          });
-            this.loadingUsers = false;
-          }
-        });
+      });
 
     },
   },
   activated() {
     this.getUsers();
   },
+  created() {
+    this.getUsers();
+  }
 }
 </script>

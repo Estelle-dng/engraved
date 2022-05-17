@@ -172,21 +172,20 @@ export default {
     getPosts(){
       this.loadingPosts = true;
 
-        this.$axios.get(`${process.env.API}/posts`).then(response => {
-          this.posts = response.data;
-          if(!navigator.onLine){this.getOfflinePosts();}
+      this.$axios.get(`${process.env.API}/posts`).then(response => {
+        this.posts = response.data;
+        if(!navigator.onLine){this.getOfflinePosts();}
+        this.loadingPosts = false;
+      }
+      ).catch(err => {
+        if(navigator.onLine){
+          this.$q.dialog({
+          title: 'Error',
+          message: 'Could not find posts',
+        });
           this.loadingPosts = false;
         }
-        ).catch(err => {
-          if(navigator.onLine){
-            this.$q.dialog({
-            title: 'Error',
-            message: 'Could not find posts',
-          });
-            this.loadingPosts = false;
-          }
-        });
-
+      });
     },
     getOfflinePosts() {
       let db = openDB('workbox-background-sync').then(db => {
