@@ -15,6 +15,7 @@
     "@quasar/extras": "^1.0.0",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "firebase": "^9.8.1",
     "idb": "^7.0.1",
     "md-gum-polyfill": "^1.0.0",
     "quasar": "^1.0.0"

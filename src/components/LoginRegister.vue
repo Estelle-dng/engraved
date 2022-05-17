@@ -69,6 +69,9 @@
 
 <script>
 import { join } from "path";
+import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
+const auth = getAuth();
+const provider = new GoogleAuthProvider();
 export default {
   components:{
     'forgot-password' : require('components/ForgotPassword.vue').default,
@@ -88,27 +91,26 @@ export default {
   },
   methods: {
     onSubmit () {
-      if (this.formData.accept !== true) {
-        this.$q.notify({
-          color: 'red-5',
-          textColor: 'white',
-          icon: 'warning',
-          message: 'You need to accept the license and terms first'
-        })
-      }
-      else {
-        if (this.tab === 'login') {
-          this.signInExistingUser(this.formData.email, this.formData.password)
+      if (this.tab === 'login') {
+        this.signInExistingUser()
+      } else {
+          if (this.formData.accept !== true) {
+          this.$q.notify({
+            color: 'red-5',
+            textColor: 'white',
+            icon: 'warning',
+            message: 'You need to accept the license and terms first'
+          })
         } else {
-          this.createUser(this.formData.email, this.formData.password, this.formData.name, this.formData.tattoist)
+          this.createUser()
         }
-        this.$q.notify({
-          color: 'green-4',
-          textColor: 'white',
-          icon: 'cloud_done',
-          message: 'Submitted'
-        })
       }
+      this.$q.notify({
+        color: 'green-4',
+        textColor: 'white',
+        icon: 'cloud_done',
+        message: 'Submitted'
+      })
     },
     forgotPassword () {
       this.resetPwdDialog = true;
@@ -122,47 +124,66 @@ export default {
       this.tattoist = false
     },
     google () {
-      this.$q.loading.show();
-      let formData = new FormData();
-
-      formData.append('email', this.email);
-      formData.append('password', this.password);
-
-      this.$axios.get(`${ process.env.API }/google`, formData).then(response => {
-          //console.log('response: ', response);
-
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          // This gives you a Google Access Token. You can use it to access the Google API.
+          const credential = GoogleAuthProvider.credentialFromResult(result);
+          const token = credential.accessToken;
+          // The signed-in user info.
+          const user = result.user;
+          // ...
           this.$router.push('/');
           this.$q.notify({
-            message: 'User created!',
+            message: 'User logged!',
             actions: [
               { label: 'Dismiss', color: 'white' }
             ]
           })
-          this.$q.loading.hide();
-          if(this.$q.platform.is.safari){
-            setTimeout(() => {
-              window.location.href = '/';
-            }, 1000);
-          }
-        }).catch(err => {
-          console.log('error during registration : ', err);
-          this.$q.loading.hide();
-        })
+        }).catch((error) => {
+          // Handle Errors here.
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          // The email of the user's account used.
+          const email = error.email;
+          // The AuthCredential type that was used.
+          const credential = GoogleAuthProvider.credentialFromError(error);
+          // ...
+        });
     },
     signInExistingUser(){
+      this.$q.loading.show();
       console.log('sign in');
+      const email =  this.formData.email;
+      const password = this.formData.password;
+      signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        this.$router.push('/');
+          this.$q.notify({
+            message: 'User logged!',
+            actions: [
+              { label: 'Dismiss', color: 'white' }
+            ]
+          })
+          this.$q.loading.hide();
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        this.$q.loading.hide();
+      });
     },
     createUser(){
-       this.$q.loading.show();
-       let formData = new FormData()
-
-        formData.append('email', this.email)
-        formData.append('password', this.password)
-
-
-        this.$axios.post(`${ process.env.API }/createUser`, formData).then(response => {
-          //console.log('response: ', response);
-
+      this.$q.loading.show();
+      const email =  this.formData.email;
+      const password = this.formData.password;
+      console.log('register');
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
           this.$router.push('/');
           this.$q.notify({
             message: 'User created!',
@@ -171,17 +192,16 @@ export default {
             ]
           })
           this.$q.loading.hide();
-          if(this.$q.platform.is.safari){
-            setTimeout(() => {
-              window.location.href = '/';
-            }, 1000);
-          }
-        }).catch(err => {
-          console.log('error during registration : ', err);
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
           this.$q.loading.hide();
+          // ..
         });
-      }
     },
-  }
+  },
+}
 
 </script>

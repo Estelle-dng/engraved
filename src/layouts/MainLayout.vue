@@ -156,16 +156,32 @@
                <q-separator/>
 
               <q-item
+              v-if="!logged"
                 v-ripple
                 name="Login"
                 to="/auth"
                 clickable
               >
                 <q-item-section avatar>
-                  <q-icon name="eva-plus-outline" />
+                  <q-icon name="eva-log-in-outline" />
                 </q-item-section>
                 <q-item-section>
                   Login / Register
+                </q-item-section>
+              </q-item>
+              <q-item
+                v-if="logged"
+                v-ripple
+                name="Logout"
+                to="/"
+                clickable
+                @click="logout()"
+              >
+                <q-item-section avatar>
+                  <q-icon name="eva-log-out-outline" />
+                </q-item-section>
+                <q-item-section>
+                  Logout
                 </q-item-section>
               </q-item>
             </template>
@@ -257,7 +273,8 @@
 <script>
 // Initialize deferredPrompt for use later to show browser install prompt.
 let deferredPrompt;
-
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+const auth = getAuth();
 export default {
   name: 'MainLayout',
   data () {
@@ -265,6 +282,7 @@ export default {
       showAppInstallBanner : false,
       userIsTattoist : true,
       drawer: false,
+      logged : false
     }
   },
   methods: {
@@ -286,7 +304,30 @@ export default {
     neverShowAppInstallBanner() {
       this.showAppInstallBanner = false
       this.$q.localStorage.set('neverShowAppInstallBanner', true)
-    }
+    },
+    logout() {
+      auth.signOut()
+      this.$router.push('/')
+        .then(() => {
+        this.$q.notify({message: 'Sign Out Success.'})
+      })
+      .catch(error =>  console.log('error',error))
+    },
+    isUserLoggedIn() {
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          this.logged = true;
+          // User is signed in, see docs for a list of available properties
+          // https://firebase.google.com/docs/reference/js/firebase.User
+          const uid = user.uid;
+          // ...
+        } else {
+          this.logged = false;
+          // User is signed out
+          // ...
+        }
+      });
+    },
   },
   mounted() {
     let neverShowAppInstallBanner = this.$q.localStorage.getItem('neverShowAppInstallBanner')
@@ -305,13 +346,11 @@ export default {
       });
     }
   },
-  logout() {
-    firebase.auth().signOut()
-    this.$router.push('/')
-      .then(() => {
-      this.$q.notify({message: 'Sign Out Success.'})
-    })
-    .catch(error =>  console.log('error',error))
+  activated() {
+    this.isUserLoggedIn();
+  },
+  created(){
+    this.isUserLoggedIn();
   }
 }
 </script>

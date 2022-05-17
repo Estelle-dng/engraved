@@ -42,7 +42,7 @@ export default {
   name: 'PageUsers',
   data() {
     return {
-      loadingPosts: false,
+      loadingUsers: false,
       users : [],
     }
   },
@@ -53,6 +53,7 @@ export default {
       this.$axios.get(`${process.env.API}/users`).then(response => {
         console.log(response);
         this.users = response.data;
+        // can get diplayName and photoURL
         if(!navigator.onLine){this.getOfflineUsers();}
         this.loadingUsers = false;
       }

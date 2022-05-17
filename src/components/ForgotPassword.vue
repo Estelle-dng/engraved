@@ -1,5 +1,5 @@
 <template>
-<div class="flex flex-center">
+  <div class="flex flex-center">
     <q-card style="width: 500px; max-width: 40vw;">
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6">
@@ -23,7 +23,7 @@
             <q-btn
               class="q-pl-md q-pr-md q-mr-md text-capitalize rounded-borders"
               label="Submit"
-              color="primary"
+              color="grey-10"
               @click="resetPassword"
             />
           </div>
@@ -35,6 +35,7 @@
 
 <script>
 import { join } from "path";
+import { getAuth } from "firebase/auth";
 export default {
   name: "ForgotPassword",
   data (){
@@ -46,13 +47,9 @@ export default {
   },
   methods: {
     resetPassword () {
-      firebase.auth().sendPasswordResetEmail(this.form.email)
-      .then(() => {
-        this.form = {}
-        this.$q.notify({message: 'Check you email and reset your password.'})
-      })
-      .catch(error => console.log(error))
-      }
+      userEmail = this.form.email;
+      //TODO
+    }
   }
 }
 </script>
