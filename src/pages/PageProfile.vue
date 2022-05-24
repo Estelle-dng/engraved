@@ -1,15 +1,13 @@
 <template>
   <q-page padding>
     <h2>profile</h2>
-    <q-btn @click="getUserData()">oui</q-btn>
     <p>Salut {{ email }} ! </p>
     <!-- content -->
   </q-page>
 </template>
 
 <script>
-import { getAuth } from "firebase/auth";
-
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 const auth = getAuth();
 const user = auth.currentUser;
 export default {
@@ -21,20 +19,19 @@ export default {
   },
   methods: {
     getUserData(){
-      console.log(user);
-      if (user !== null) {
-        // The user object has basic properties such as display name, email, etc.
-        const displayName = user.displayName;
-        this.email = user.email;
-        const photoURL = user.photoURL;
-        const emailVerified = user.emailVerified;
-        console.log('user');
-        // The user's ID, unique to the Firebase project. Do NOT use
-        // this value to authenticate with your backend server, if
-        // you have one. Use User.getToken() instead.
-        const uid = user.uid;
-      }
-    }
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // User is signed in, see docs for a list of available properties
+          // https://firebase.google.com/docs/reference/js/firebase.User
+          this.email = user.email;
+          const uid = user.uid;
+          // ...
+        } else {
+          // User is signed out
+          // ...
+        }
+      });
+    },()
   },
   activated(){
     this.getUserData();
