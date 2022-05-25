@@ -54,7 +54,6 @@ export default {
         console.log(response);
         this.users = response.data;
         // can get diplayName and photoURL
-        if(!navigator.onLine){this.getOfflineUsers();}
         this.loadingUsers = false;
       }
       ).catch(err => {

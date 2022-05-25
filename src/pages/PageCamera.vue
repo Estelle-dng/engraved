@@ -89,6 +89,8 @@
 
 <script>
 import { uid } from 'quasar';
+import { getAuth} from "firebase/auth";
+const auth = getAuth();
 require('md-gum-polyfill');
 export default {
   name: 'PageCamera',
@@ -127,7 +129,7 @@ export default {
         this.hasCameraSupport = false;
       });
     },
-     captureImg() {
+    captureImg() {
       let video = this.$refs.capture;
       let canvas = this.$refs.canvas;
       canvas.width = video.getBoundingClientRect().width;
@@ -237,6 +239,7 @@ export default {
         formData.append('caption', this.post.caption)
         formData.append('location', this.post.location)
         formData.append('date', this.post.date)
+        formData.append('userId', auth.currentUser.uid)
         formData.append('file', this.post.img, this.post.id + '.png')
 
         this.$axios.post(`${ process.env.API }/createPost`, formData).then(response => {

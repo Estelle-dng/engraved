@@ -9,6 +9,7 @@
               <img src="../assets/logo-engraved-dark.png">
           </q-avatar>
         </q-btn>
+        <!-- <q-btn @click="myBtn()">mon btn</q-btn> -->
         <q-separator class="large-screen-only" dark vertical inset />
         <q-toolbar-title class="title col text-center text-sm-left">
           Engraved
@@ -286,6 +287,9 @@ export default {
     }
   },
   methods: {
+    myBtn(){
+      console.log();
+    },
     installApp() {
       // Hide the app provided install promotion
       this.showAppInstallBanner = false
@@ -328,6 +332,28 @@ export default {
         }
       });
     },
+    hasRole(roles){
+      if (this.logged){
+
+        this.$axios.get(`${process.env.API}/posts`).then(response => {
+        this.posts = response.data;
+        if(!navigator.onLine){this.getOfflinePosts();}
+        this.loadingPosts = false;
+      }
+      ).catch(err => {
+        if(navigator.onLine){
+          this.$q.dialog({
+          title: 'Error',
+          message: 'Could not find posts',
+        });
+          this.loadingPosts = false;
+        }
+      });
+
+        return true;
+      } ;
+      return false;
+    },
   },
   mounted() {
     let neverShowAppInstallBanner = this.$q.localStorage.getItem('neverShowAppInstallBanner')
@@ -356,7 +382,4 @@ export default {
 </script>
 
 <style lang="scss">
-/* .q-avatar .q-avatar__content{
-  justify-content: start;
-} */
 </style>

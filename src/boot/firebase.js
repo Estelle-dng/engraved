@@ -22,7 +22,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+//const analytics = getAnalytics(app);
 const db = getFirestore(app);
 
 // Initialize Firebase Authentication and get a reference to the service
@@ -33,12 +33,4 @@ const provider = new GoogleAuthProvider();
 // more info on params: https://quasar.dev/quasar-cli/boot-files
 export default async (/* { app, router, Vue ... } */) => {
   // something to do
-}
-
-// Get a list of cities from your database
-async function getUsers(db) {
-  const citiesCol = collection(db, 'users');
-  const citySnapshot = await getDocs(citiesCol);
-  const cityList = citySnapshot.docs.map(doc => doc.data());
-  return cityList;
 }
