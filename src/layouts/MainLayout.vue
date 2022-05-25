@@ -9,7 +9,7 @@
               <img src="../assets/logo-engraved-dark.png">
           </q-avatar>
         </q-btn>
-        <!-- <q-btn @click="myBtn()">mon btn</q-btn> -->
+        <!-- <q-btn to="/tattoist">tattoist</q-btn> -->
         <q-separator class="large-screen-only" dark vertical inset />
         <q-toolbar-title class="title col text-center text-sm-left">
           Engraved
@@ -110,6 +110,23 @@
                 v-ripple
                 name="Profile"
                 to="/profile"
+                clickable
+              >
+                <q-item-section avatar>
+                  <q-icon name="eva-person-outline" />
+                </q-item-section>
+                <q-item-section>
+                  Profile
+                </q-item-section>
+              </q-item>
+
+               <q-separator/>
+
+               <q-item
+                v-if="userIsTattoist"
+                v-ripple
+                name="Profile"
+                to="/tattoist"
                 clickable
               >
                 <q-item-section avatar>
