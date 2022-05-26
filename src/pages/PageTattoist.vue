@@ -1,11 +1,43 @@
 <template>
-  <q-page padding>
+  <q-page >
+    <section class="row q-pa-0 ">
+      <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" class="banner column col-12 text-right ">
+        <q-btn
+          class="bg-grey-10 text-white q-mt-md q-mr-md"
+          icon="eva-edit-outline"
+          size="md"
+          to="/edit"
+          round
+        />
+      </q-img>
+    </section>
+    <section class="q-pa-lg" v-if="getUserData()">
+      <div class="row">
+        <div class="user-info col slef-start">
+          <p class="q-mb-xs">{{ email }} // {{ name }}</p>
+          <p>xxx folowers</p>
+          <div class="row text-grey-7 col self-end">
+            <q-icon name="eva-pin"/>
+            <p class="q-ml-sm">Bordeaux, 33000 France</p>
+          </div>
 
-    <h2>profile</h2>
-    <p v-if="getUserData()">Salut {{ email }} // {{ name }}! </p>
-    <div v-else class="text-center"><q-btn to="/auth" class="bg-red text-white">Log in now !</q-btn></div>
-    <!-- content -->
-
+        </div>
+        <q-btn label="Follow" color="red" class="col-2 follow"></q-btn>
+      </div>
+      <div class="row">
+          <q-chip  class="bg-grey-9 text-white">realist</q-chip>
+          <q-chip  class="bg-grey-9 text-white">black work</q-chip>
+          <q-chip class="bg-grey-9 text-white">animal</q-chip>
+      </div>
+      <div class="bio q-pt-lg">
+        <p class="q-mb-xs">Contact : estelle.denage@gmail.com</p>
+        <p>Booking : Open</p>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis minima autem at quas aperiam eos rem enim officia architecto? Labore laboriosam repellendus in molestiae odit possimus iusto, nobis numquam eius.</p>
+      </div>
+    </section>
+    <section v-else class="text-center">
+      <q-btn to="/auth" class="bg-red text-white">Log in now !</q-btn>
+    </section>
    <section v-if="posts.length" class="row">
         <q-card
        v-for="post in posts"
@@ -39,14 +71,12 @@ export default {
   methods: {
     getUserData(){
       onAuthStateChanged(auth, (user) => {
-        if (user) {
+        if (user.uid) {
           // User is signed in, see docs for a list of available properties
           // https://firebase.google.com/docs/reference/js/firebase.User
           this.email = user.email;
-          console.log(auth.currentUser.uid);
           const userInfo = doc(db, "users", user.uid);
           const docSnap = getDoc(userInfo).then(res => {
-            console.log("Document data:", res.data());
             let user = res.data();
             this.name = user.name;
           }).catch(err => {console.log('error : ', err);});
@@ -81,3 +111,8 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  .banner{max-height: 300px;}
+  .follow{max-height: 36px;}
+</style>
