@@ -34,6 +34,7 @@ export default {
         }
       });
       if(onAuthStateChanged) return true;
+      return false;
     },
   },
   activated(){

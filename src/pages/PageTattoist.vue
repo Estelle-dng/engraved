@@ -2,7 +2,7 @@
   <q-page padding>
 
     <h2>profile</h2>
-    <p v-if="getUserData()">Salut {{ email }} ! </p>
+    <p v-if="getUserData()">Salut {{ email }} // {{ name }}! </p>
     <div v-else class="text-center"><q-btn to="/auth" class="bg-red text-white">Log in now !</q-btn></div>
     <!-- content -->
 
@@ -11,7 +11,6 @@
        v-for="post in posts"
        :key="post.id"
        class="card-post q-mb-md col-sm-4 col-xs-4 col-md-4"
-       :class="{'bg-red-2' : post.offline}"
        bordered
        flat
       >
@@ -23,7 +22,7 @@
 
 <script>
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { collection, query, where, getDocs, getFirestore } from "firebase/firestore";
+import { collection, query, where, getDocs, getFirestore, doc, getDoc } from "firebase/firestore";
 const db = getFirestore();
 const posts = collection(db, "posts");
 const auth = getAuth();
@@ -33,6 +32,7 @@ export default {
   data(){
     return{
        email : '',
+       name : '',
        posts : []
     }
   },
@@ -43,6 +43,14 @@ export default {
           // User is signed in, see docs for a list of available properties
           // https://firebase.google.com/docs/reference/js/firebase.User
           this.email = user.email;
+          console.log(auth.currentUser.uid);
+          const userInfo = doc(db, "users", user.uid);
+          const docSnap = getDoc(userInfo).then(res => {
+            console.log("Document data:", res.data());
+            let user = res.data();
+            this.name = user.name;
+          }).catch(err => {console.log('error : ', err);});
+
           return true;
         } else {
           // User is signed out

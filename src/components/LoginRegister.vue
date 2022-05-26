@@ -68,8 +68,9 @@
 </template>
 
 <script>
-import { join } from "path";
-import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
+import { collection, query, where, getDocs, setDoc, doc, getFirestore } from "firebase/firestore";
+const db = getFirestore();
 const auth = getAuth();
 const provider = new GoogleAuthProvider();
 export default {
@@ -179,11 +180,16 @@ export default {
       this.$q.loading.show();
       const email =  this.formData.email;
       const password = this.formData.password;
+      const tattoist = this.formData.tattoist;
+      const accepted = this.formData.accept;
+      const userName = this.formData.name;
       console.log('register');
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
+      createUserWithEmailAndPassword(auth, email, password, userName, tattoist, accepted)
+        .then(() => {
           // Signed in
-          const user = userCredential.user;
+          const user = doc(db, 'users', auth.currentUser.uid);
+          setDoc(user, { name: userName, tattoist : tattoist }, { merge: true });
+
           this.$router.push('/');
           this.$q.notify({
             message: 'User created!',
@@ -192,13 +198,11 @@ export default {
             ]
           })
           this.$q.loading.hide();
-          // ...
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
           this.$q.loading.hide();
-          // ..
         });
     },
   },
