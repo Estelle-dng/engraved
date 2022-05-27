@@ -1,6 +1,6 @@
 <template>
-  <q-page class="constrain-camera q-pa-md">
-    <div class="camera-frame q-pa-md">
+  <q-page class="constrain-camera">
+    <div class="camera-frame">
      <video
      v-show="!imageCaptured"
      ref="capture"
@@ -15,38 +15,45 @@
       height="240"
      />
     </div>
-    <div class="text-center q-mt-md">
-      <q-btn
-      v-show='hasCameraSupport'
-      @click = 'captureImg'
-      :disable="imageCaptured"
-      round color="grey-10"
-      icon="eva-camera"
-      size="lg"
-      />
-    </div>
-    <p class="text-center q-my-lg">or</p>
-    <div class="row justify-center q-ma-md">
-      <q-file
-        v-model="imageUpload"
-        @input="displayUploadImage"
-        class="col col-sm-8"
-        label="Download image"
-        bottom-slots
-        counter
-        filled
-        accept="image/*"
+    <section class="q-pa-md">
+      <div class="text-center q-mt-md">
+        <q-btn
+        v-show='hasCameraSupport'
+        @click = 'captureImg'
+        :disable="imageCaptured"
+        round color="grey-10"
+        icon="eva-camera"
+        size="lg"
+        />
+        <q-btn
+        v-show='hasCameraSupport && imageCaptured'
+        @click = 'resetCamera'
+        round color="grey-10"
+        icon="eva-refresh"
+        size="lg"
+        class="q-ml-md"
+        />
+      </div>
 
-      >
+      <p class="text-center q-my-lg">or</p>
+
+      <div class="row justify-center q-ma-md">
+        <q-file
+          v-model="imageUpload"
+          @input="displayUploadImage"
+          @clear="resetUpload()"
+          class="col col-sm-8 cursor-pointer"
+          label="Download image"
+          color="grey-10"
+          bottom-slots
+          counter
+          filled
+          clearable
+          accept="image/*"
+        >
         <template v-slot:prepend>
-          <q-icon name="upload" @click.stop />
+          <q-icon name="upload"/>
         </template>
-        <template v-slot:append>
-          <q-icon name="close" @click.stop="post.img = null" class="cursor-pointer" />
-        </template>
-        <!-- <template v-slot:hint>
-          Field hint
-        </template> -->
       </q-file>
     </div>
     <div class="row justify-center q-ma-md">
@@ -54,7 +61,13 @@
         v-model="post.caption"
         label="Caption *"
         class="col col-sm-8"
+        color="grey-10"
         />
+    </div>
+    <div class="row justify-center">
+      <div class="col-sm-3 col-xs-6 q-pa-sm"><q-input clearable filled color="grey-10"  v-model="post.hashtags[0]" label="Hashtag 1" /></div>
+      <div class="col-sm-3 col-xs-6 q-pa-sm"><q-input clearable filled color="grey-10"  v-model="post.hashtags[1]" label="Hashtag 2" /></div>
+      <div class="col-sm-3 col-xs-6 q-pa-sm"><q-input clearable filled color="grey-10"  v-model="post.hashtags[2]" label="Hashtag 3" /></div>
     </div>
     <div class="row justify-center q-ma-md">
         <q-input
@@ -62,11 +75,12 @@
         :loading="locationLoading"
         label="Location"
         class="col col-sm-8"
+        color="grey-10"
         >
           <template v-slot:append>
             <q-btn
               v-if="!locationLoading && locationSupported"
-              @click="getLocation"
+              @click="getLocation()"
               icon="eva-navigation-2-outline"
               dense
               flat
@@ -84,6 +98,7 @@
        label="Post"
        />
     </div>
+    </section>
   </q-page>
 </template>
 
@@ -102,6 +117,7 @@ export default {
         location : '',
         img: null,
         date : Date.now(),
+        hashtags : [],
       },
       imageCaptured : false,
       imageUpload: [],
@@ -140,6 +156,14 @@ export default {
       this.post.img = this.dataURItoBlob(canvas.toDataURL());
       this.disableCamera();
     },
+    resetCamera(){
+      this.initCamemra();
+      this.imageCaptured = false;
+    },
+    resetUpload(){
+      this.imageUpload = [];
+      this.imageCaptured = false;
+    },
     displayUploadImage(file){
       this.post.img = file;
 
@@ -158,7 +182,6 @@ export default {
           img.src = event.target.result;
       }
       reader.readAsDataURL(file);
-
     },
     disableCamera(){
       this.$refs.capture.srcObject.getVideoTracks().forEach(track => {
@@ -241,6 +264,7 @@ export default {
         formData.append('date', this.post.date)
         formData.append('userId', auth.currentUser.uid)
         formData.append('file', this.post.img, this.post.id + '.png')
+        formData.append('hashtags', this.post.hashtags)
 
         this.$axios.post(`${ process.env.API }/createPost`, formData).then(response => {
           //console.log('response: ', response);
@@ -287,10 +311,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-  .camera-frame{
-    border: 2px solid $grey-10;
-    border-radius: 10px;
-  }
-</style>

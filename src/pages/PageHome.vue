@@ -108,6 +108,11 @@
             {{post.date | formattedDate}}
           </q-item-label>
       </q-card-section>
+      <q-card-section class="q-pt-0">
+        <div class="row">
+          <q-chip class="bg-grey-9 text-white" v-for="hashtag in post.hashtags" :key="hashtag">{{hashtag}}</q-chip>
+      </div>
+      </q-card-section>
     </q-card>
       </template>
       <template v-else-if="!loadingPosts && !posts.length">
@@ -339,5 +344,6 @@ export default {
       z-index: 1;
       height: 10px;
       }
+    .q-pt-0{padding-top: 0 !important}
   }
 </style>

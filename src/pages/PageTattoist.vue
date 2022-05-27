@@ -49,6 +49,9 @@
         <q-img :src="post.imageUrl"/>
        </q-card>
     </section>
+
+    
+
   </q-page>
 </template>
 
@@ -100,6 +103,7 @@ export default {
       });
 
     },
+
   },
   activated(){
     this.getUserData();
