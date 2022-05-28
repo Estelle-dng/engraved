@@ -69,9 +69,9 @@
           </q-avatar>
         </q-item-section>
         <q-item-section>
-          <q-item-label class="title">{{post.userName}}</q-item-label>
+          <q-item-label class="title"> {{post.userName}}</q-item-label>
           <q-item-label caption>
-            <q-icon
+            <q-icon v-if="post.location"
             name="eva-pin-outline"
             /> {{post.location}}
           </q-item-label>
@@ -86,27 +86,20 @@
       <q-separator />
       <q-card-section class="row">
         {{post.caption}}
-          <q-chip
-          v-for="word in post.keyWords"
-          :key="word"
-          >{{word}}</q-chip>
-          <q-separator class="small-screen-only" vertical inset />
-          <q-item-label class="col text-right small-screen-only">
-            <q-icon
-            class="full-height"
-            name="eva-calendar-outline"
-            />
-            {{post.date | formattedDate}}
-          </q-item-label>
-      </q-card-section>
-      <q-card-section class="large-screen-only">
-        <q-separator />
-        <q-item-label class="q-pt-md">
-            <q-icon
-            name="eva-calendar-outline "
-            />
-            {{post.date | formattedDate}}
-          </q-item-label>
+        <q-chip
+        v-for="word in post.keyWords"
+        :key="word"
+        >
+          {{word}}
+        </q-chip>
+        <q-separator class="" vertical inset />
+        <q-item-label class="col text-right">
+          <q-icon
+          class="full-height"
+          name="eva-calendar-outline"
+          />
+          {{post.date | formattedDate}}
+        </q-item-label>
       </q-card-section>
       <q-card-section class="q-pt-0">
         <div class="row">
@@ -339,11 +332,12 @@ export default {
     .q-img{
       min-height: 200px;
       max-height: 500px;
-      }
+    }
     .badge-offline{
       z-index: 1;
       height: 10px;
-      }
+    }
+    .title{font-weight: 500;}
     .q-pt-0{padding-top: 0 !important}
   }
 </style>
