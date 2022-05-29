@@ -27,25 +27,20 @@ const routes = [
         title: "Search"
       }},
 
-      { path: '/notifications',
-      component: () => import('src/pages/PageNotifications.vue'),
-      name: 'Notifications',
-      meta:{
-        title: "Notifications"
-      }},
-
       { path: '/camera',
       component: () => import('src/pages/PageCamera.vue'),
       name: 'Camera',
       meta:{
-        title: "Camera"
+        title: "Camera",
+        requiresAuth: true
       }},
 
       { path: '/profile',
       component: () => import('src/pages/PageProfile.vue'),
       name: 'Profile',
       meta:{
-        title: "Profile"
+        title: "Profile",
+        requiresAuth: true
       }},
 
       { path: '/tattoist',
@@ -59,14 +54,8 @@ const routes = [
       component: () => import('src/pages/PageSettings.vue'),
       name: 'Settings',
       meta:{
-        title: "Settings"
-      }},
-
-      { path: '/users',
-      component: () => import('src/pages/PageUsers.vue'),
-      name: 'Users',
-      meta:{
-        title: "Users"
+        title: "Settings",
+        requiresAuth: true
       }},
 
       { path: '/auth',

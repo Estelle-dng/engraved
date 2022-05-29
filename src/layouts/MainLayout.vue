@@ -16,22 +16,31 @@
         </q-toolbar-title>
        <q-tabs
        class="small-screen-only"
-       v-if="userIsTattoist"
        >
         <q-route-tab
+          v-if="userIsTattoist"
           class="justify-end"
           to="/camera"
           icon="eva-camera-outline"
           name="Camera"
         />
-        </q-tabs>
-        <q-tabs class="small-screen-only">
-          <q-route-tab
-            class="justify-end"
-            to="/settings"
-            icon="eva-settings-2-outline"
-            name="Settings"
-          />
+        <q-route-tab
+          v-if="!logged"
+            v-ripple
+            name="Login"
+            to="/auth"
+            clickable
+            icon="eva-log-in-outline"
+        />
+        <q-route-tab
+          v-if="logged"
+          v-ripple
+          name="Logout"
+          to="/"
+          clickable
+          @click="logout()"
+          icon="eva-log-out-outline"
+        />
         </q-tabs>
 
         <q-btn
@@ -125,7 +134,7 @@
                <q-item
                 v-if="userIsTattoist"
                 v-ripple
-                name="Profile"
+                name="Tattoist Profile"
                 to="/tattoist"
                 clickable
               >
@@ -273,14 +282,14 @@
           name="Search"
           />
         <q-route-tab
-          to="/notifications"
-          icon="eva-bell-outline"
-          name="Notifications"
-        />
-        <q-route-tab
           to="/profile"
           icon="eva-person-outline"
           name="Profile"
+        />
+        <q-route-tab
+          to="/settings"
+          icon="eva-settings"
+          name="Settings"
         />
       </q-tabs>
 
