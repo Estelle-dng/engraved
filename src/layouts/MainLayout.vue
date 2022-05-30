@@ -1,6 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header class="bg-grey-10" elevated>
+      <!-- //header navigation -->
       <q-toolbar class="row constrain">
         <q-btn to="/"
         unelevated
@@ -51,8 +52,8 @@
           flat
           round
         />
-
       </q-toolbar>
+      <!-- //Header navigation -->
     </q-header>
 
     <q-drawer
@@ -66,6 +67,7 @@
       >
         <q-scroll-area class="fit">
           <q-list>
+            <!-- //Drawer -->
             <template>
               <q-item
                 v-ripple
@@ -116,6 +118,7 @@
               <q-separator/>
 
               <q-item
+                v-if="!userIsTattoist"
                 v-ripple
                 name="Profile"
                 to="/profile"
@@ -212,7 +215,7 @@
                 </q-item-section>
               </q-item>
             </template>
-
+            <!-- //Drawer -->
           </q-list>
         </q-scroll-area>
     </q-drawer>
@@ -267,6 +270,7 @@
         </q-banner>
       </div>
 
+      <!-- // Phone navigation -->
       <q-tabs
       class="small-screen-only bg-grey-10 text-white shadow-2"
       active-color="red-9"
@@ -282,7 +286,14 @@
           name="Search"
           />
         <q-route-tab
+          v-if="!userIsTattoist"
           to="/profile"
+          icon="eva-person-outline"
+          name="Profile"
+        />
+        <q-route-tab
+          v-if="userIsTattoist"
+          to="/tattoist"
           icon="eva-person-outline"
           name="Profile"
         />
@@ -292,7 +303,7 @@
           name="Settings"
         />
       </q-tabs>
-
+      <!-- // Phone navigation -->
     </q-footer>
   </q-layout>
 </template>

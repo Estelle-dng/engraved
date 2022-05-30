@@ -103,15 +103,15 @@ export default {
             message: 'You need to accept the license and terms first'
           })
         } else {
-          this.createUser()
+          this.createUser();
+          this.$q.notify({
+            color: 'green-4',
+            textColor: 'white',
+            icon: 'cloud_done',
+            message: 'Submitted'
+          })
         }
       }
-      this.$q.notify({
-        color: 'green-4',
-        textColor: 'white',
-        icon: 'cloud_done',
-        message: 'Submitted'
-      })
     },
     forgotPassword () {
       this.resetPwdDialog = true;

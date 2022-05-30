@@ -1,38 +1,31 @@
 <template>
   <q-page >
-    <section class="row q-pa-0 ">
-      <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" class="banner column col-12 text-right ">
-        <q-btn
-          class="bg-grey-10 text-white q-mt-md q-mr-md"
-          icon="eva-edit-outline"
-          size="md"
-          to="/edit"
-          round
-        />
-      </q-img>
+    <section class="row q-pa-0 "  v-if="getUserData()">
+      <q-img v-if="banner" src="" class="banner column col-12 text-right "/>
+      <q-img src="../assets/banner.jpg" class="banner column col-12 text-right "/>
     </section>
     <section class="q-pa-lg" v-if="getUserData()">
       <div class="row">
         <div class="user-info col slef-start">
-          <p class="q-mb-xs">{{ email }} // {{ name }}</p>
-          <p>xxx folowers</p>
+          <p class="q-mb-xs font-weight-medium"> {{ name }}</p>
+          <!-- <p>xxx folowers</p> -->
           <div class="row text-grey-7 col self-end">
             <q-icon name="eva-pin"/>
-            <p class="q-ml-sm">Bordeaux, 33000 France</p>
+            <p class="q-ml-sm">{{ location }}</p>
           </div>
 
         </div>
-        <q-btn label="Follow" color="red" class="col-2 follow"></q-btn>
+        <!-- <q-btn label="Follow" color="red" class="col-2 follow"></q-btn> -->
       </div>
       <div class="row">
-          <q-chip  class="bg-grey-9 text-white">realist</q-chip>
-          <q-chip  class="bg-grey-9 text-white">black work</q-chip>
-          <q-chip class="bg-grey-9 text-white">animal</q-chip>
+          <q-chip  class="bg-grey-9 text-white">{{style[0]}}</q-chip>
+          <q-chip  class="bg-grey-9 text-white">{{style[1]}}</q-chip>
+          <q-chip class="bg-grey-9 text-white">{{style[2]}}</q-chip>
       </div>
       <div class="bio q-pt-lg">
-        <p class="q-mb-xs">Contact : estelle.denage@gmail.com</p>
-        <p>Booking : Open</p>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis minima autem at quas aperiam eos rem enim officia architecto? Labore laboriosam repellendus in molestiae odit possimus iusto, nobis numquam eius.</p>
+        <p class="q-mb-xs">Contact : {{contact}}</p>
+        <p>Booking : <span v-if="booking">Open</span><span v-else>Closed</span></p>
+        <p>{{bio}}</p>
       </div>
     </section>
     <section v-else class="text-center">
@@ -50,7 +43,7 @@
        </q-card>
     </section>
 
-    
+
 
   </q-page>
 </template>
@@ -67,8 +60,14 @@ export default {
   data(){
     return{
        email : '',
+       banner : '',
        name : '',
-       posts : []
+       posts : [],
+       bio : '',
+       contact: '',
+       booking: true,
+       location: '',
+       style : []
     }
   },
   methods: {
@@ -82,6 +81,12 @@ export default {
           const docSnap = getDoc(userInfo).then(res => {
             let user = res.data();
             this.name = user.name;
+            this.bio = user.bio;
+            this.contact = user.contact;
+            this.style = user.style;
+            this.location = user.location;
+            this.banner = user.photo;
+            this.booking = user.booking;
           }).catch(err => {console.log('error : ', err);});
 
           return true;
@@ -93,14 +98,14 @@ export default {
       if(onAuthStateChanged) return true;
     },
     async getPosts(){
-    // Get posts
-      const q = query(posts , where("userId", "==", getAuth().currentUser.uid));
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        console.log(doc.id, " => ", doc.data());
-        this.posts.push(doc.data());
-      });
+        // Get posts
+        const q = query(posts , where("userId", "==", getAuth().currentUser.uid));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          console.log(doc.id, " => ", doc.data());
+          this.posts.push(doc.data());
+        });
 
     },
 
