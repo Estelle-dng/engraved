@@ -5,6 +5,7 @@
         <div class="col col-sm-8 q-ma-md">
           <p>Profile picture</p>
           <q-file
+            v-model="banner"
             class="col col-sm-8 cursor-pointer"
             label="Download image"
             color="grey-10"
@@ -94,8 +95,12 @@
 <script>
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { uuid } from 'uuidv4';
+const storage = getStorage();
 const db = getFirestore();
 const auth = getAuth();
+
 export default {
   name: 'PageSettings',
 
@@ -106,7 +111,9 @@ export default {
        bio : '',
        contact: '',
        booking: true,
-       location: ''
+       location: '',
+       banner: null,
+       bannerUrl: null,
     }
   },
   computed:{
@@ -178,8 +185,32 @@ export default {
       });
       this.locationLoading = false;
     },
+    uploadImage(){
+      // Create the file metadata
+      /** @type {any} */
+      const metadata = {
+        contentType: 'image/jpeg'
+      };
+
+      let file = this.banner;
+      let token = uuid();
+      // Upload file and metadata to the object 'fileName.jpg'
+      const storageRef = ref(storage, file.name + '&token=' + token );
+
+      // 'file' comes from the Blob or File API
+      uploadBytes(storageRef, file, metadata).then(snapshot => {
+          getDownloadURL(snapshot.ref).then((downloadURL) => {
+            let bannerURL = downloadURL;
+            this.bannerUrl = bannerURL;
+            //console.log(this.bannerUrl); // OK
+        });
+      });
+    },
     updateUser() {
       this.$q.loading.show();
+
+      this.uploadImage();
+      //console.log(this.bannerUrl);
 
       const docData = {
           bio: this.bio,
@@ -187,7 +218,7 @@ export default {
           location: this.location,
           style: this.style,
           contact: this.contact,
-          banner: {}
+          photo: this.bannerUrl
       };
       setDoc(doc(db, "users", auth.currentUser.uid), docData, { merge: true }).then(response => {
           this.$q.notify({
@@ -195,8 +226,9 @@ export default {
             actions: [
               { label: 'Dismiss', color: 'white' }
             ]
-          })
+          });
           this.$q.loading.hide();
+          this.$router.push('/profile');
         }).catch(err => {
             this.$q.notify('Error : ', err);
             this.$router.push('/');
@@ -204,8 +236,9 @@ export default {
     },
     deleteUser(){
 
-    }
+    },
   },
+
   activated(){
     this.getUserData();
   },

@@ -18,7 +18,8 @@
     "firebase": "^9.8.1",
     "idb": "^7.0.1",
     "md-gum-polyfill": "^1.0.0",
-    "quasar": "^1.0.0"
+    "quasar": "^1.0.0",
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@quasar/app": "^2.0.0",
