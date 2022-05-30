@@ -42,9 +42,6 @@
         <q-img :src="post.imageUrl"/>
        </q-card>
     </section>
-
-
-
   </q-page>
 </template>
 

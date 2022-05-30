@@ -32,7 +32,7 @@ const routes = [
       name: 'Camera',
       meta:{
         title: "Camera",
-        requiresAuth: true
+        //requiresAuth: true
       }},
 
       { path: '/profile',
@@ -40,7 +40,7 @@ const routes = [
       name: 'Profile',
       meta:{
         title: "Profile",
-        requiresAuth: true
+        //requiresAuth: true
       }},
 
       { path: '/tattoist',
@@ -55,7 +55,7 @@ const routes = [
       name: 'Settings',
       meta:{
         title: "Settings",
-        requiresAuth: true
+        //requiresAuth: true
       }},
 
       { path: '/auth',

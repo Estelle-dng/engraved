@@ -93,7 +93,7 @@
 
 <script>
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { collection, query, where, getDocs, getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 const db = getFirestore();
 const auth = getAuth();
 export default {
@@ -102,8 +102,6 @@ export default {
   data(){
     return{
        locationLoading: false,
-
-
        style: [],
        bio : '',
        contact: '',
@@ -137,7 +135,7 @@ export default {
 
           return true;
         } else {
-          // User is signed out
+          console.log('User is signed out');
           return;
         }
       });
@@ -191,7 +189,6 @@ export default {
           contact: this.contact,
           banner: {}
       };
-
       setDoc(doc(db, "users", auth.currentUser.uid), docData, { merge: true }).then(response => {
           this.$q.notify({
             message: 'Infos updated!',
@@ -205,12 +202,6 @@ export default {
             this.$router.push('/');
         });
     },
-    updateUserError() {
-      this.$q.dialog({
-        title: 'Error',
-        message: 'Sorry, could not update your profile!'
-      })
-    },
     deleteUser(){
 
     }
@@ -222,6 +213,4 @@ export default {
     this.getUserData();
   }
 }
-</script>
-
 </script>
