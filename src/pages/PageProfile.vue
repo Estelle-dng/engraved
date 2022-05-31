@@ -1,47 +1,143 @@
 <template>
-  <q-page padding>
+  <q-page v-if="tattoist">
+    <section class="row q-pa-0 ">
+      <q-img v-if="banner" :src="banner" class="banner column col-12 text-right "/>
+      <q-img v-else src="../assets/banner.jpg" class="banner column col-12 text-right "/>
+    </section>
+    <section class="q-pa-lg">
+      <div class="row">
+        <div class="user-info col slef-start">
+          <p class="q-mb-xs font-weight-medium">{{ name }}</p>
+          <!-- <p>xxx folowers</p> -->
+          <div class="row text-grey-7 col self-end">
+            <q-icon name="eva-pin"/>
+            <p class="q-ml-sm">{{ location }}</p>
+          </div>
 
-    <h2>profile</h2>
-    <p v-if="getUserData()">Salut {{ email }} ! </p>
-    <div v-else class="text-center"><q-btn to="/auth" class="bg-red text-white">Log in now !</q-btn></div>
-    <!-- content -->
+        </div>
+        <!-- <q-btn label="Follow" color="red" class="col-2 follow"></q-btn> -->
+      </div>
+      <div class="row">
+          <q-chip  class="bg-grey-9 text-white">{{style[0]}}</q-chip>
+          <q-chip  class="bg-grey-9 text-white">{{style[1]}}</q-chip>
+          <q-chip class="bg-grey-9 text-white">{{style[2]}}</q-chip>
+      </div>
+      <div class="bio q-pt-lg">
+        <p class="q-mb-xs">Contact : {{contact}}</p>
+        <p>Booking : <span v-if="booking">Open</span><span v-else>Closed</span></p>
+        <p>{{bio}}</p>
+      </div>
+    </section>
+   <section v-if="posts.length" class="row">
+        <q-card
+       v-for="post in posts"
+       :key="post.id"
+       class="card-post q-mb-md col-sm-4 col-xs-4 col-md-4"
+       bordered
+       flat
+      >
+        <q-img :src="post.imageUrl"/>
+       </q-card>
+    </section>
+  </q-page>
+  <q-page class="q-pa-md" v-else>
+    <div class="row h-100 q-pa-md">
+      <div class="user-pp">
+        <q-img v-if="banner" :src="banner" class=""/>
+        <q-img v-else src="../assets/banner.jpg" class=""/>
+      </div>
+      <div class="justify-center q-ml-md column">
+            <p class="q-mb-xs font-weight-medium"> {{ name }}</p>
+      </div>
+    </div>
+    <div class="q-pa-lg">
+      <div class="bio">
+        <h6 class="q-ma-0">Bio : </h6>
+        <p>{{bio}}</p>
+      </div>
+    </div>
   </q-page>
 </template>
 
 <script>
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { collection, query, where, getDocs, getFirestore, doc, getDoc } from "firebase/firestore";
+const db = getFirestore();
+const posts = collection(db, "posts");
 const auth = getAuth();
-const user = auth.currentUser;
 export default {
   name: 'PageProfile',
 
   data(){
     return{
        email : '',
+       banner : '',
+       name : '',
+       posts : [],
+       bio : '',
+       contact: '',
+       booking: true,
+       location: '',
+       style : [],
+       tattoist : false,
     }
   },
   methods: {
     getUserData(){
       onAuthStateChanged(auth, (user) => {
-        if (user) {
-          // User is signed in, see docs for a list of available properties
-          // https://firebase.google.com/docs/reference/js/firebase.User
+        if (user.uid) {
           this.email = user.email;
-          return true;
+          const userInfo = doc(db, "users", user.uid);
+          getDoc(userInfo).then(res => {
+            console.log('user info : ', res.data());
+            let user = res.data();
+            this.name = user.name;
+            this.bio = user.bio;
+            this.contact = user.contact;
+            this.style = user.style;
+            this.location = user.location;
+            this.banner = user.photo;
+            this.booking = user.booking;
+            this.tattoist = user.tattoist;
+          }).catch(err => {console.log('error : ', err);});
         } else {
-          // User is signed out
-          return;
+          this.$router.push('/auth');
         }
-      });
-      if(onAuthStateChanged) return true;
-      return false;
+      },
+       () =>  this.$router.push('/auth'));
+    },
+    async getPosts(){
+        const q = query(posts , where("userId", "==", getAuth().currentUser.uid));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          this.posts.push(doc.data());
+        });
     },
   },
   activated(){
     this.getUserData();
+    this.getPosts();
   },
   created(){
     this.getUserData();
+    this.getPosts();
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  .h-100{height: 100%}
+  .user-pp{
+    border-radius: 5rem;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    overflow: hidden;
+    .q-img{height: 100%}
+
+  }
+  .q-ma-0{margin: 0 !important}
+  .font-weight-medium{font-weight : 600;}
+  .banner{max-height: 300px;}
+  .follow{max-height: 36px;}
+</style>

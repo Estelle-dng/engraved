@@ -103,42 +103,8 @@
 
               <q-item
                 v-ripple
-                name="Notificatins"
-                to="/notifications"
-                clickable
-              >
-                <q-item-section avatar>
-                  <q-icon name="eva-bell-outline" />
-                </q-item-section>
-                <q-item-section>
-                  Notifications
-                </q-item-section>
-              </q-item>
-
-              <q-separator/>
-
-              <q-item
-                v-if="!userIsTattoist"
-                v-ripple
                 name="Profile"
                 to="/profile"
-                clickable
-              >
-                <q-item-section avatar>
-                  <q-icon name="eva-person-outline" />
-                </q-item-section>
-                <q-item-section>
-                  Profile
-                </q-item-section>
-              </q-item>
-
-               <q-separator/>
-
-               <q-item
-                v-if="userIsTattoist"
-                v-ripple
-                name="Tattoist Profile"
-                to="/tattoist"
                 clickable
               >
                 <q-item-section avatar>
@@ -199,6 +165,7 @@
                   Login / Register
                 </q-item-section>
               </q-item>
+
               <q-item
                 v-if="logged"
                 v-ripple
@@ -214,6 +181,7 @@
                   Logout
                 </q-item-section>
               </q-item>
+
             </template>
             <!-- //Drawer -->
           </q-list>
@@ -227,7 +195,7 @@
     </q-page-container>
 
     <q-footer elevated>
-
+      <!-- // Install banner -->
       <div
       v-if="showAppInstallBanner"
       class="bg-red">
@@ -286,19 +254,11 @@
           name="Search"
           />
         <q-route-tab
-          v-if="!userIsTattoist"
           to="/profile"
           icon="eva-person-outline"
           name="Profile"
         />
         <q-route-tab
-          v-if="userIsTattoist"
-          to="/tattoist"
-          icon="eva-person-outline"
-          name="Profile"
-        />
-        <q-route-tab
-          v-if="logged"
           to="/settings"
           icon="eva-settings"
           name="Settings"
@@ -325,9 +285,6 @@ export default {
     }
   },
   methods: {
-    myBtn(){
-      console.log();
-    },
     installApp() {
       // Hide the app provided install promotion
       this.showAppInstallBanner = false
@@ -359,43 +316,15 @@ export default {
       onAuthStateChanged(auth, (user) => {
         if (user) {
           this.logged = true;
-          // User is signed in, see docs for a list of available properties
-          // https://firebase.google.com/docs/reference/js/firebase.User
           const uid = user.uid;
-          // ...
         } else {
           this.logged = false;
-          // User is signed out
-          // ...
         }
       });
-    },
-    hasRole(roles){
-      if (this.logged){
-
-        this.$axios.get(`${process.env.API}/posts`).then(response => {
-        this.posts = response.data;
-        if(!navigator.onLine){this.getOfflinePosts();}
-        this.loadingPosts = false;
-      }
-      ).catch(err => {
-        if(navigator.onLine){
-          this.$q.dialog({
-          title: 'Error',
-          message: 'Could not find posts',
-        });
-          this.loadingPosts = false;
-        }
-      });
-
-        return true;
-      }
-      return false;
     },
   },
   mounted() {
     let neverShowAppInstallBanner = this.$q.localStorage.getItem('neverShowAppInstallBanner')
-
     if (!neverShowAppInstallBanner) {
       window.addEventListener('beforeinstallprompt', (e) => {
         // Prevent the mini-infobar from appearing on mobile
@@ -418,6 +347,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-</style>

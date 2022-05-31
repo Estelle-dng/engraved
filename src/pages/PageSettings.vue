@@ -18,6 +18,7 @@
             clearable
             accept="image/*"
             @input="onFileChange()"
+            @clear="setOldUrl()"
           >
           <template v-slot:prepend>
             <q-icon name="upload"/>
@@ -34,47 +35,51 @@
         type="textarea"
         />
     </div>
-    <div class="row justify-center">
-      <div class="col-sm-3 col-xs-6 q-pa-sm"><q-input clearable filled color="grey-10"  v-model="style[0]" label="Art style 1" /></div>
-      <div class="col-sm-3 col-xs-6 q-pa-sm"><q-input clearable filled color="grey-10"  v-model="style[1]" label="Art style 2" /></div>
-      <div class="col-sm-3 col-xs-6 q-pa-sm"><q-input clearable filled color="grey-10"  v-model="style[2]" label="Art style 3" /></div>
-    </div>
-    <div class="row q-ma-md justify-center">
-     <q-toggle
-      class="col col-8"
-      label="Is your booking open ?"
-      v-model="booking"
-      color="red"
-      />
-    </div>
-    <div class="row justify-center q-ma-md">
-        <q-input
-        v-model="contact"
-        label="Contact adress"
-        class="col col-sm-8"
-        color="grey-10"
+
+    <section v-if="tattoist">
+      <div class="row justify-center">
+        <div class="col-sm-3 col-xs-6 q-pa-sm"><q-input clearable filled color="grey-10"  v-model="style[0]" label="Art style 1" /></div>
+        <div class="col-sm-3 col-xs-6 q-pa-sm"><q-input clearable filled color="grey-10"  v-model="style[1]" label="Art style 2" /></div>
+        <div class="col-sm-3 col-xs-6 q-pa-sm"><q-input clearable filled color="grey-10"  v-model="style[2]" label="Art style 3" /></div>
+      </div>
+      <div class="row q-ma-md justify-center">
+      <q-toggle
+        class="col col-8"
+        label="Is your booking open ?"
+        v-model="booking"
+        color="red"
         />
-    </div>
-    <div class="row justify-center q-ma-md">
-        <q-input
-        v-model="location"
-        :loading="locationLoading"
-        label="Location"
-        class="col col-sm-8"
-        color="grey-10"
-        >
-          <template v-slot:append>
-            <q-btn
-              v-if="!locationLoading && locationSupported"
-              @click="getLocation()"
-              icon="eva-navigation-2-outline"
-              dense
-              flat
-              round
-            />
-          </template>
-        </q-input>
-    </div>
+      </div>
+      <div class="row justify-center q-ma-md">
+          <q-input
+          v-model="contact"
+          label="Contact adress"
+          class="col col-sm-8"
+          color="grey-10"
+          />
+      </div>
+      <div class="row justify-center q-ma-md">
+          <q-input
+          v-model="location"
+          :loading="locationLoading"
+          label="Location"
+          class="col col-sm-8"
+          color="grey-10"
+          >
+            <template v-slot:append>
+              <q-btn
+                v-if="!locationLoading && locationSupported"
+                @click="getLocation()"
+                icon="eva-navigation-2-outline"
+                dense
+                flat
+                round
+              />
+            </template>
+          </q-input>
+      </div>
+    </section>
+
     <div class="row justify-center q-mt-lg">
        <q-btn
        @click="updateUser()"
@@ -116,7 +121,9 @@ export default {
        booking: true,
        location: '',
        banner: null,
-       bannerUrl: null,
+       baseUrl: "",
+       bannerUrl: "",
+       tattoist : false,
     }
   },
   computed:{
@@ -129,18 +136,17 @@ export default {
     getUserData(){
       onAuthStateChanged(auth, (user) => {
         if (user.uid) {
-
           const userInfo = doc(db, "users", user.uid);
-          const docSnap = getDoc(userInfo).then(res => {
+          getDoc(userInfo).then(res => {
             let user = res.data();
-
+            this.tattoist = user.tattoist;
             this.bio = user.bio;
             this.contact = user.contact;
             this.style = user.style;
             this.location = user.location;
             this.bannerUrl = user.photo;
             this.booking = user.booking;
-
+            this.baseUrl = user.photo;
           }).catch(err => {console.log('error : ', err);});
         } else {
           console.log('User is signed out');
@@ -187,6 +193,9 @@ export default {
     onFileChange() {
       this.bannerUrl = URL.createObjectURL(this.banner);
     },
+    setOldUrl(){
+      this.bannerUrl = this.baseUrl;
+    },
     async updateBanner(){
       try {
         const file = this.banner;
@@ -208,14 +217,22 @@ export default {
         } else {
           photoUrl = this.bannerUrl;
         }
-        const docData = {
-          bio: this.bio,
-          booking: this.booking,
-          location: this.location,
-          style: this.style,
-          contact: this.contact,
-          photo: photoUrl
-        };
+        let docData;
+        if(this.tattoist){
+          docData = {
+            bio: this.bio,
+            booking: this.booking,
+            location: this.location,
+            style: this.style,
+            contact: this.contact,
+            photo: photoUrl
+          };
+        } else {
+          docData = {
+            bio: this.bio,
+            photo: photoUrl
+          };
+        }
         setDoc(doc(db, "users", auth.currentUser.uid), docData, { merge: true }).then((response) => {
           this.$q.notify({
             message: 'Infos updated!',
@@ -224,7 +241,7 @@ export default {
             ]
           });
           this.$q.loading.hide();
-          this.$router.push('/tattoist');
+          this.$router.push('/profile');
         }).catch(err => {
             this.$q.notify('Error : ', err);
             this.$router.push('/');

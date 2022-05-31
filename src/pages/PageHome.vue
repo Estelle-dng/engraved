@@ -69,7 +69,7 @@
           </q-avatar>
         </q-item-section>
         <q-item-section>
-          <q-item-label class="title"> {{post.userName}}</q-item-label>
+          <router-link class="title" :to="{ name: 'Tattoist', params: { id : post.userId} }">{{post.userName}}</router-link>
           <q-item-label caption>
             <q-icon v-if="post.location"
             name="eva-pin-outline"
@@ -337,7 +337,11 @@ export default {
       z-index: 1;
       height: 10px;
     }
-    .title{font-weight: 500;}
+    .title{
+      font-weight: 700;
+      text-decoration: none;
+      color: black;
+      }
     .q-pt-0{padding-top: 0 !important}
   }
 </style>

@@ -46,6 +46,7 @@ const routes = [
       { path: '/tattoist',
       component: () => import('src/pages/PageTattoist.vue'),
       name: 'Tattoist',
+      props: true,
       meta:{
         title: "Tattoist"
       }},

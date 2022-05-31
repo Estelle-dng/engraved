@@ -10,7 +10,7 @@
           <p class="q-mb-xs font-weight-medium"> {{ name }}</p>
           <!-- <p>xxx folowers</p> -->
           <div class="row text-grey-7 col self-end">
-            <q-icon name="eva-pin"/>
+            <q-icon v-if="location" name="eva-pin"/>
             <p class="q-ml-sm">{{ location }}</p>
           </div>
 
@@ -18,9 +18,7 @@
         <!-- <q-btn label="Follow" color="red" class="col-2 follow"></q-btn> -->
       </div>
       <div class="row">
-          <q-chip  class="bg-grey-9 text-white">{{style[0]}}</q-chip>
-          <q-chip  class="bg-grey-9 text-white">{{style[1]}}</q-chip>
-          <q-chip class="bg-grey-9 text-white">{{style[2]}}</q-chip>
+          <q-chip v-for="el in style" :key="el" class="bg-grey-9 text-white">{{el}}</q-chip>
       </div>
       <div class="bio q-pt-lg">
         <p class="q-mb-xs">Contact : {{contact}}</p>
@@ -43,11 +41,9 @@
 </template>
 
 <script>
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, getDocs, getFirestore, doc, getDoc } from "firebase/firestore";
 const db = getFirestore();
 const posts = collection(db, "posts");
-const auth = getAuth();
 export default {
   name: 'PageProfile',
 
@@ -61,17 +57,14 @@ export default {
        contact: '',
        booking: true,
        location: '',
-       style : []
+       style : [],
+       selectedUid : 0,
     }
   },
   methods: {
-    getUserData(){
-     let u = onAuthStateChanged(auth, (user) => {
-        if (user.uid) {
-          this.email = user.email;
-          const userInfo = doc(db, "users", user.uid);
+    getUserData(selectedUid){
+          const userInfo = doc(db, "users", selectedUid);
           getDoc(userInfo).then(res => {
-            console.log('user info : ', res.data());
             let user = res.data();
             this.name = user.name;
             this.bio = user.bio;
@@ -81,32 +74,26 @@ export default {
             this.banner = user.photo;
             this.booking = user.booking;
           }).catch(err => {console.log('error : ', err);});
-        } else {
-          this.$router.push('/auth');
-        }
-      },
-       () =>  this.$router.push('/auth'));
+          this.getPosts(selectedUid);
     },
-    async getPosts(){
-        // Get posts
-        const q = query(posts , where("userId", "==", getAuth().currentUser.uid));
+    async getPosts(selectedUid){
+        const q = query(posts , where("userId", "==", selectedUid));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
           console.log(doc.id, " => ", doc.data());
           this.posts.push(doc.data());
         });
-
     },
-
   },
   activated(){
-    this.getUserData();
-    this.getPosts();
+    this.selectedUid = this.$route.params.id;
+    this.getUserData(this.selectedUid);
+    console.log(this.$route.params.id);
   },
   created(){
-    this.getUserData();
-    this.getPosts();
+   this.selectedUid = this.$route.params.id;
+    this.getUserData(this.selectedUid);
+    console.log(this.$route.params);
   }
 }
 </script>

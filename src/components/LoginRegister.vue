@@ -153,7 +153,6 @@ export default {
     },
     signInExistingUser(){
       this.$q.loading.show();
-      console.log('sign in');
       const email =  this.formData.email;
       const password = this.formData.password;
       signInWithEmailAndPassword(auth, email, password)
