@@ -4,6 +4,9 @@
       <div class="row  justify-center">
         <div class="col col-sm-8 q-ma-md">
           <p>Profile picture</p>
+          <div id="preview">
+            <img v-if="bannerUrl" :src="bannerUrl" />
+          </div>
           <q-file
             v-model="banner"
             class="col col-sm-8 cursor-pointer"
@@ -14,6 +17,7 @@
             filled
             clearable
             accept="image/*"
+            @input="onFileChange()"
           >
           <template v-slot:prepend>
             <q-icon name="upload"/>
@@ -103,7 +107,6 @@ const auth = getAuth();
 
 export default {
   name: 'PageSettings',
-
   data(){
     return{
        locationLoading: false,
@@ -135,18 +138,14 @@ export default {
             this.contact = user.contact;
             this.style = user.style;
             this.location = user.location;
-            this.banner = user.photo;
+            this.bannerUrl = user.photo;
             this.booking = user.booking;
 
           }).catch(err => {console.log('error : ', err);});
-
-          return true;
         } else {
           console.log('User is signed out');
-          return;
         }
       });
-      if(onAuthStateChanged) return true;
     },
     getLocation(){
       this.locationLoading = true;
@@ -185,6 +184,9 @@ export default {
       });
       this.locationLoading = false;
     },
+    onFileChange() {
+      this.bannerUrl = URL.createObjectURL(this.banner);
+    },
     async updateBanner(){
       try {
         const file = this.banner;
@@ -194,19 +196,25 @@ export default {
         const downloadURL = await getDownloadURL(snapshot.ref);
         return downloadURL;
       }
-      catch{ console.log('err : ', err);}
+      catch{ err => {console.log('err : ', err);}}
     },
     async updateUser() {
       this.$q.loading.show();
 
       Promise.resolve(this.updateBanner()).then((resp) => {
+        let photoUrl;
+        if(resp !== undefined){
+          photoUrl = resp;
+        } else {
+          photoUrl = this.bannerUrl;
+        }
         const docData = {
           bio: this.bio,
           booking: this.booking,
           location: this.location,
           style: this.style,
           contact: this.contact,
-          photo: resp
+          photo: photoUrl
         };
         setDoc(doc(db, "users", auth.currentUser.uid), docData, { merge: true }).then((response) => {
           this.$q.notify({
@@ -236,3 +244,16 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+#preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#preview img {
+  max-width: 100%;
+  max-height: 300px;
+}
+</style>
