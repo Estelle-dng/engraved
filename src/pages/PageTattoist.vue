@@ -9,11 +9,10 @@
         <div class="user-info col slef-start">
           <p class="q-mb-xs font-weight-medium"> {{ name }}</p>
           <!-- <p>xxx folowers</p> -->
-          <div class="row text-grey-7 col self-end">
-            <q-icon v-if="location" name="eva-pin"/>
+          <div v-if="location" class="row text-grey-7 col self-end">
+            <q-icon name="eva-pin"/>
             <p class="q-ml-sm">{{ location }}</p>
           </div>
-
         </div>
         <!-- <q-btn label="Follow" color="red" class="col-2 follow"></q-btn> -->
       </div>
@@ -21,7 +20,7 @@
           <q-chip v-for="el in style" :key="el" class="bg-grey-9 text-white">{{el}}</q-chip>
       </div>
       <div class="bio q-pt-lg">
-        <p class="q-mb-xs">Contact : {{contact}}</p>
+        <p v-if="contact" class="q-mb-xs">Contact : {{contact}}</p>
         <p>Booking : <span v-if="booking">Open</span><span v-else>Closed</span></p>
         <p>{{bio}}</p>
       </div>
@@ -99,6 +98,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .font-weight-medium{font-weight:700;}
   .banner{max-height: 300px;}
   .follow{max-height: 36px;}
 </style>

@@ -65,7 +65,8 @@
       <q-item>
         <q-item-section avatar>
           <q-avatar>
-            <img src="icons/icon-128x128.png"> <!-- :src="post.userPicture" -->
+            <img v-if="post.userPhoto" :src="post.userPhoto"/>
+            <img v-else src="icons/icon-128x128.png">
           </q-avatar>
         </q-item-section>
         <q-item-section>
@@ -86,13 +87,7 @@
       <q-separator />
       <q-card-section class="row">
         {{post.caption}}
-        <q-chip
-        v-for="word in post.keyWords"
-        :key="word"
-        >
-          {{word}}
-        </q-chip>
-        <q-separator class="" vertical inset />
+        <q-separator vertical inset />
         <q-item-label class="col text-right">
           <q-icon
           class="full-height"
@@ -103,7 +98,7 @@
       </q-card-section>
       <q-card-section class="q-pt-0">
         <div class="row">
-          <q-chip class="bg-grey-9 text-white" v-for="hashtag in post.hashtags" :key="hashtag">{{hashtag}}</q-chip>
+          <q-chip class="bg-grey-9 text-white" v-for="hashtag in post.hashtags" :key="hashtag"><span v-if="hashtag"></span>{{hashtag}}</q-chip>
       </div>
       </q-card-section>
     </q-card>
@@ -186,7 +181,7 @@ export default {
       });
     },
     getOfflinePosts() {
-      let db = openDB('workbox-background-sync').then(db => {
+      openDB('workbox-background-sync').then(db => {
         db.getAll('requests').then(failedRequests => {
           failedRequests.forEach(failedRequest => {
             if (failedRequest.queueName == 'createPostQueue') {

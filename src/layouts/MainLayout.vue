@@ -273,13 +273,14 @@
 // Initialize deferredPrompt for use later to show browser install prompt.
 let deferredPrompt;
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-const auth = getAuth();
+import { doc, getDoc } from "firebase/firestore";
+const db = getFirestore();
 export default {
   name: 'MainLayout',
   data () {
     return {
       showAppInstallBanner : false,
-      userIsTattoist : true,
+      userIsTattoist : false,
       drawer: false,
       logged : false
     }
@@ -316,7 +317,11 @@ export default {
       onAuthStateChanged(auth, (user) => {
         if (user) {
           this.logged = true;
-          const uid = user.uid;
+          const userInfo = doc(db, "users", user.uid);
+          getDoc(userInfo).then(res => {
+            let user = res.data();
+            this.tattoist = user.tattoist;
+          }).catch(err => {console.log('error : ', err);});
         } else {
           this.logged = false;
         }
