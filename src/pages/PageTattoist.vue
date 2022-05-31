@@ -1,10 +1,10 @@
 <template>
   <q-page >
-    <section class="row q-pa-0 "  v-if="getUserData()">
-      <q-img v-if="banner" src="" class="banner column col-12 text-right "/>
-      <q-img src="../assets/banner.jpg" class="banner column col-12 text-right "/>
+    <section class="row q-pa-0 ">
+      <q-img v-if="banner" :src="banner" class="banner column col-12 text-right "/>
+      <q-img v-else src="../assets/banner.jpg" class="banner column col-12 text-right "/>
     </section>
-    <section class="q-pa-lg" v-if="getUserData()">
+    <section class="q-pa-lg">
       <div class="row">
         <div class="user-info col slef-start">
           <p class="q-mb-xs font-weight-medium"> {{ name }}</p>
@@ -27,9 +27,6 @@
         <p>Booking : <span v-if="booking">Open</span><span v-else>Closed</span></p>
         <p>{{bio}}</p>
       </div>
-    </section>
-    <section v-else class="text-center">
-      <q-btn to="/auth" class="bg-red text-white">Log in now !</q-btn>
     </section>
    <section v-if="posts.length" class="row">
         <q-card
@@ -69,13 +66,12 @@ export default {
   },
   methods: {
     getUserData(){
-      onAuthStateChanged(auth, (user) => {
+     let u = onAuthStateChanged(auth, (user) => {
         if (user.uid) {
-          // User is signed in, see docs for a list of available properties
-          // https://firebase.google.com/docs/reference/js/firebase.User
           this.email = user.email;
           const userInfo = doc(db, "users", user.uid);
-          const docSnap = getDoc(userInfo).then(res => {
+          getDoc(userInfo).then(res => {
+            console.log('user info : ', res.data());
             let user = res.data();
             this.name = user.name;
             this.bio = user.bio;
@@ -85,14 +81,11 @@ export default {
             this.banner = user.photo;
             this.booking = user.booking;
           }).catch(err => {console.log('error : ', err);});
-
-          return true;
         } else {
-          // User is signed out
-          return;
+          this.$router.push('/auth');
         }
-      });
-      if(onAuthStateChanged) return true;
+      },
+       () =>  this.$router.push('/auth'));
     },
     async getPosts(){
         // Get posts

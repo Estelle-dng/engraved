@@ -298,6 +298,7 @@
           name="Profile"
         />
         <q-route-tab
+          v-if="logged"
           to="/settings"
           icon="eva-settings"
           name="Settings"
@@ -388,7 +389,7 @@ export default {
       });
 
         return true;
-      } ;
+      }
       return false;
     },
   },

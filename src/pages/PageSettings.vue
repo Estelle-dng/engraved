@@ -185,42 +185,30 @@ export default {
       });
       this.locationLoading = false;
     },
-    uploadImage(){
-      // Create the file metadata
-      /** @type {any} */
-      const metadata = {
-        contentType: 'image/jpeg'
-      };
-
-      let file = this.banner;
-      let token = uuid();
-      // Upload file and metadata to the object 'fileName.jpg'
-      const storageRef = ref(storage, file.name + '&token=' + token );
-
-      // 'file' comes from the Blob or File API
-      uploadBytes(storageRef, file, metadata).then(snapshot => {
-          getDownloadURL(snapshot.ref).then((downloadURL) => {
-            let bannerURL = downloadURL;
-            this.bannerUrl = bannerURL;
-            //console.log(this.bannerUrl); // OK
-        });
-      });
+    async updateBanner(){
+      try {
+        const file = this.banner;
+        const token = uuid();
+        const storageRef = ref(storage, file.name + '&token=' + token );
+        const snapshot = await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        return downloadURL;
+      }
+      catch{ console.log('err : ', err);}
     },
-    updateUser() {
+    async updateUser() {
       this.$q.loading.show();
 
-      this.uploadImage();
-      //console.log(this.bannerUrl);
-
-      const docData = {
+      Promise.resolve(this.updateBanner()).then((resp) => {
+        const docData = {
           bio: this.bio,
           booking: this.booking,
           location: this.location,
           style: this.style,
           contact: this.contact,
-          photo: this.bannerUrl
-      };
-      setDoc(doc(db, "users", auth.currentUser.uid), docData, { merge: true }).then(response => {
+          photo: resp
+        };
+        setDoc(doc(db, "users", auth.currentUser.uid), docData, { merge: true }).then((response) => {
           this.$q.notify({
             message: 'Infos updated!',
             actions: [
@@ -228,11 +216,12 @@ export default {
             ]
           });
           this.$q.loading.hide();
-          this.$router.push('/profile');
+          this.$router.push('/tattoist');
         }).catch(err => {
             this.$q.notify('Error : ', err);
             this.$router.push('/');
         });
+      });
     },
     deleteUser(){
 
