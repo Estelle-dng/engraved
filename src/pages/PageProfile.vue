@@ -89,7 +89,7 @@ export default {
           this.email = user.email;
           const userInfo = doc(db, "users", user.uid);
           getDoc(userInfo).then(res => {
-            console.log('user info : ', res.data());
+            //console.log('user info : ', res.data());
             let user = res.data();
             this.name = user.name;
             this.bio = user.bio;

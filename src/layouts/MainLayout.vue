@@ -273,7 +273,8 @@
 // Initialize deferredPrompt for use later to show browser install prompt.
 let deferredPrompt;
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
+const auth = getAuth();
 const db = getFirestore();
 export default {
   name: 'MainLayout',
@@ -320,7 +321,8 @@ export default {
           const userInfo = doc(db, "users", user.uid);
           getDoc(userInfo).then(res => {
             let user = res.data();
-            this.tattoist = user.tattoist;
+            this.userIsTattoist = user.tattoist;
+            //console.log(this.userIsTattoist);
           }).catch(err => {console.log('error : ', err);});
         } else {
           this.logged = false;

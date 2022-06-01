@@ -98,7 +98,7 @@
       </q-card-section>
       <q-card-section class="q-pt-0">
         <div class="row">
-          <q-chip class="bg-grey-9 text-white" v-for="hashtag in post.hashtags" :key="hashtag"><span v-if="hashtag"></span>{{hashtag}}</q-chip>
+          <q-chip class="bg-grey-9 text-white" v-for="hashtag in post.hashtags" :key="hashtag"><span v-if="!hashtag"></span>{{hashtag}}</q-chip>
       </div>
       </q-card-section>
     </q-card>
@@ -125,9 +125,7 @@
               </q-item-label>
             </q-item-section>
           </q-item>
-
           <q-skeleton height="200px" square animation="fade" />
-
           <q-card-section>
             <q-skeleton type="text" class="text-subtitle2" animation="fade" />
             <q-skeleton type="text" width="50%" class="text-subtitle2" animation="fade" />
@@ -276,12 +274,6 @@ export default {
       this.$q.localStorage.set('neverShowNotificationsBanner', true)
     },
     displayGrantedNotifications(){
-      /* new Notification('You are now subscribed to notifications !', {
-        body: 'Thanks for subscribing',
-        icon: 'icons/icon-128x128.png',
-        tag: 'confirm-notification',
-        renotify: true,
-      }); */
       if(this.serviceWorkerSupported && this.pushNotificationsSupported){
         navigator.serviceWorker.ready.then(swreg => {
           swreg.showNotification('You are now subscribed to notifications !', {
