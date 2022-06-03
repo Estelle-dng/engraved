@@ -2,7 +2,6 @@
   <div class="q-pa-md">
     <q-form
       @submit="onSubmit"
-      @reset="onReset"
       class="q-gutter-md"
     >
     <q-input
@@ -11,7 +10,9 @@
         v-model="formData.name"
         label="Your name *"
         lazy-rules
+        bottom-slots
         :rules="[ val => val && val.length > 0 || 'Please type something']"
+        color="grey-10"
       />
       <q-input
         filled
@@ -19,19 +20,32 @@
         type="email"
         label="Your email *"
         lazy-rules
-        :rules="[ val => val && val.length > 0 || 'Please type something']"
+        bottom-slots
+        color="grey-10"
       />
       <q-input
-        filled
-        v-model="formData.password"
-        type="password"
-        label="Your password *"
-        lazy-rules
-        :rules="[ val => val && val.length > 0 || 'Please type something']"
-      />
-
+      v-model="formData.password"
+      filled
+      :type="isPwd ? 'password' : 'text'"
+      hint=""
+      label="Your password *"
+      lazy-rules
+      :error="!isValid"
+      bottom-slots
+      color="grey-10"
+      >
+        <template v-slot:append>
+          <q-icon
+            :name="isPwd ? 'visibility_off' : 'visibility'"
+            class="cursor-pointer"
+            @click="isPwd = !isPwd"
+          />
+        </template>
+        <template v-slot:error>
+          {{errorMessage}}
+        </template>
+      </q-input>
       <q-separator/>
-
       <template v-if="tab === 'register'">
         <div class="text-center q-mb-lg">Sign up with</div>
       </template>
@@ -43,24 +57,18 @@
           @click="google"
         />
       </div>
-
       <div v-if="tab == 'register'">
         <q-toggle v-model="formData.tattoist" label="I'm a tattoo artist" />
         <q-toggle v-model="formData.accept" label="I accept the license and terms" />
       </div>
-
       <div>
         <q-btn :label="tab" type="submit" color="grey-10"/>
-        <q-btn label="Reset" type="reset" color="red" flat class="q-ml-sm" />
       </div>
-
     </q-form>
-
     <div class="text-center q-my-md">
       <q-btn flat label="Forgot Password?" color="grey" class="text-capitalize rounded-borders"
         v-if="tab !== 'register'" @click="forgotPassword" />
     </div>
-
     <q-dialog v-model="resetPwdDialog">
       <forgot-password />
     </q-dialog>
@@ -68,8 +76,8 @@
 </template>
 
 <script>
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
-import { collection, query, where, getDocs, setDoc, doc, getFirestore } from "firebase/firestore";
+import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
+import { setDoc, doc, getFirestore } from "firebase/firestore";
 const db = getFirestore();
 const auth = getAuth();
 const provider = new GoogleAuthProvider();
@@ -87,7 +95,10 @@ export default {
         password: '',
         tattoist : false,
         accept: false,
-      }
+      },
+      isPwd: true,
+      isValid: true,
+      errorMessage: ""
     }
   },
   methods: {
@@ -113,26 +124,10 @@ export default {
         }
       }
     },
-    forgotPassword () {
-      this.resetPwdDialog = true;
-    },
-    onReset () {
-      console.log('reset');
-      this.name = null
-      this.email = null
-      this.password = null
-      this.accept = false
-      this.tattoist = false
-    },
     google () {
       signInWithPopup(auth, provider)
         .then((result) => {
-          // This gives you a Google Access Token. You can use it to access the Google API.
-          //const credential = GoogleAuthProvider.credentialFromResult(result);
-          //const token = credential.accessToken;
-          // The signed-in user info.
           const userInfo = result.user;
-          //console.log(userInfo);
           const user = doc(db, 'users', auth.currentUser.uid);
           setDoc(user, { name: userInfo.displayName, tattoist : false, photo: userInfo.photoURL }, { merge: true });
           // ...
@@ -144,14 +139,10 @@ export default {
             ]
           })
         }).catch((error) => {
-          // Handle Errors here.
           const errorCode = error.code;
           const errorMessage = error.message;
-          // The email of the user's account used.
           const email = error.email;
-          // The AuthCredential type that was used.
           const credential = GoogleAuthProvider.credentialFromError(error);
-          // ...
         });
     },
     signInExistingUser(){
@@ -160,21 +151,32 @@ export default {
       const password = this.formData.password;
       signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed in
         const user = userCredential.user;
         this.$router.push('/');
-          this.$q.notify({
-            message: 'User logged!',
+        this.$q.notify({
+          message: 'User logged!',
+          actions: [
+            { label: 'Dismiss', color: 'white' }
+          ]
+        });
+        this.$q.loading.hide();
+      })
+      .catch((error) => {
+        console.log(error.code);
+        if(error.code == "auth/wrong-password"){
+          this.isValid = false;
+          this.errorMessage = "Wrong password."
+        }
+        if(error.code == "auth/too-many-requests"){
+          this.isValid = false;
+          this.errorMessage = "Too failed many requests, please try later"
+        }
+        this.$q.notify({
+            message: error.message,
             actions: [
               { label: 'Dismiss', color: 'white' }
             ]
           })
-          this.$q.loading.hide();
-        // ...
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
         this.$q.loading.hide();
       });
     },
@@ -188,7 +190,6 @@ export default {
       console.log('register');
       createUserWithEmailAndPassword(auth, email, password, userName, tattoist, accepted)
         .then(() => {
-          // Signed in
           const user = doc(db, 'users', auth.currentUser.uid);
           setDoc(user, { name: userName, tattoist : tattoist }, { merge: true });
 
@@ -206,6 +207,9 @@ export default {
           const errorMessage = error.message;
           this.$q.loading.hide();
         });
+    },
+    forgotPassword () {
+      this.resetPwdDialog = true;
     },
   },
 }

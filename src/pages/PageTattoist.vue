@@ -25,39 +25,45 @@
         <p>{{bio}}</p>
       </div>
     </section>
-   <section v-if="posts.length" class="row">
-        <q-card
+    <section v-if="posts.length" class="row">
+      <q-card
        v-for="post in posts"
+       @click="openModal(post)"
        :key="post.id"
        class="card-post q-mb-md col-sm-4 col-xs-4 col-md-4"
        bordered
        flat
       >
         <q-img :src="post.imageUrl"/>
-       </q-card>
+      </q-card>
     </section>
+    <modal v-if="modalVisible" @close="modalVisible = false" :data="modalData"/>
   </q-page>
 </template>
 
 <script>
-import { collection, query, where, getDocs, getFirestore, doc, getDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, getFirestore, doc, getDoc, orderBy } from "firebase/firestore";
 const db = getFirestore();
 const posts = collection(db, "posts");
 export default {
   name: 'PageProfile',
-
+  components: {
+    'modal' : require('components/Modal.vue').default,
+  },
   data(){
     return{
-       email : '',
-       banner : '',
-       name : '',
-       posts : [],
-       bio : '',
-       contact: '',
-       booking: true,
-       location: '',
-       style : [],
-       selectedUid : 0,
+      modalVisible: false,
+      modalData: null,
+      email : '',
+      banner : '',
+      name : '',
+      posts : [],
+      bio : '',
+      contact: '',
+      booking: true,
+      location: '',
+      style : [],
+      selectedUid : 0,
     }
   },
   methods: {
@@ -76,12 +82,17 @@ export default {
           this.getPosts(selectedUid);
     },
     async getPosts(selectedUid){
-        const q = query(posts , where("userId", "==", selectedUid));
+        const q = query(posts , where("userId", "==", selectedUid), orderBy('date', 'desc'));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
           console.log(doc.id, " => ", doc.data());
           this.posts.push(doc.data());
         });
+    },
+     openModal(data) {
+      this.modalData = data;
+      this.modalVisible = true;
+      console.log('clicked : ' , data);
     },
   },
   activated(){

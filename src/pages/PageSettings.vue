@@ -35,7 +35,6 @@
         type="textarea"
         />
     </div>
-
     <section v-if="tattoist">
       <div class="row justify-center">
         <div class="col-sm-3 col-xs-6 q-pa-sm"><q-input clearable filled color="grey-10"  v-model="style[0]" label="Art style 1" /></div>
@@ -78,26 +77,25 @@
             </template>
           </q-input>
       </div>
+      </section>
+        <div class="row justify-center q-mt-lg">
+          <q-btn
+          @click="updateUser()"
+          color="red"
+          icon="send"
+          label="Update"
+          />
+        </div>
+      </section>
+      <q-separator class="q-ma-lg"/>
+      <section class="row justify-center q-pa-lg">
+        <q-btn
+        @click="deleteUser()"
+        color="grey-7"
+        icon="eva-person-delete"
+        label="Delete user"
+        />
     </section>
-
-    <div class="row justify-center q-mt-lg">
-       <q-btn
-       @click="updateUser()"
-       color="red"
-       icon="send"
-       label="Update"
-       />
-    </div>
-    </section>
-    <q-separator class="q-ma-lg"/>
-     <div class="row justify-center q-pa-lg">
-       <q-btn
-       @click="deleteUser()"
-       color="grey-7"
-       icon="eva-person-delete"
-       label="Delete user"
-       />
-    </div>
   </q-page>
 </template>
 
@@ -249,10 +247,8 @@ export default {
       });
     },
     deleteUser(){
-
     },
   },
-
   activated(){
     this.getUserData();
   },
@@ -267,10 +263,9 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-#preview img {
+  img {
   max-width: 100%;
   max-height: 300px;
+  }
 }
 </style>

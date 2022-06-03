@@ -257,21 +257,15 @@ export default {
         userVisibleOnly: true,
         applicationServerKey: vapidPublicKey
       }).then(newSub => {
-        //console.log('new subscription : ', newSub);
         let newSubData = newSub.toJSON();
         let newSubDataQS = qs.stringify(newSubData);
         return this.$axios.post(`${process.env.API}/createSubscription?${newSubDataQS}`)
       }).then(response => {
-        //console.log(response);
         this.displayGrantedNotifications();
       }).catch(err => {
         console.log(err);
       });
 
-    },
-    neverShowNotificationsBanner() {
-      this.showNotificationsBanner = false
-      this.$q.localStorage.set('neverShowNotificationsBanner', true)
     },
     displayGrantedNotifications(){
       if(this.serviceWorkerSupported && this.pushNotificationsSupported){
@@ -293,6 +287,10 @@ export default {
           });
         });
       }
+    },
+    neverShowNotificationsBanner() {
+      this.showNotificationsBanner = false
+      this.$q.localStorage.set('neverShowNotificationsBanner', true)
     },
   },
   filters: {
