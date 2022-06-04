@@ -87,6 +87,9 @@ export default {
   max-height: 100vh;
   max-width: 100vw;
   background-color: rgba($color: #000000, $alpha: 0.7);
-  .card{width: 70vw;}
+  .card{
+    width: 70vw;
+    max-width: 400px;
+    }
 }
 </style>
