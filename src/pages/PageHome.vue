@@ -162,7 +162,6 @@ export default {
   methods:{
     getPosts(){
       this.loadingPosts = true;
-
       this.$axios.get(`${process.env.API}/posts`).then(response => {
         this.posts = response.data;
         if(!navigator.onLine){this.getOfflinePosts();}

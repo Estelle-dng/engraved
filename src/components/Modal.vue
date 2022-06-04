@@ -69,7 +69,6 @@ export default {
       if(currentUrl != -1){
         this.profilePage = true;
       }
-      console.log(this.profilePage);
     }
   },
   created(){
