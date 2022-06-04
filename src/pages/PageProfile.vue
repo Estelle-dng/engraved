@@ -32,6 +32,7 @@
         <q-card
        v-for="post in posts"
        :key="post.id"
+       @click="openModal(post)"
        class="card-post q-mb-md col-sm-4 col-xs-4 col-md-4"
        bordered
        flat
@@ -39,7 +40,9 @@
         <q-img :src="post.imageUrl"/>
        </q-card>
     </section>
+    <modal v-if="modalVisible" @close="modalVisible = false" :data="modalData"/>
   </q-page>
+
   <q-page class="q-pa-md" v-else>
     <div class="row h-100 q-pa-md">
       <div class="user-pp">
@@ -67,19 +70,23 @@ const posts = collection(db, "posts");
 const auth = getAuth();
 export default {
   name: 'PageProfile',
-
+  components: {
+    'modal' : require('components/Modal.vue').default,
+  },
   data(){
     return{
-       email : '',
-       banner : '',
-       name : '',
-       posts : [],
-       bio : '',
-       contact: '',
-       booking: true,
-       location: '',
-       style : [],
-       tattoist : false,
+      modalVisible: false,
+      modalData: null,
+      email : '',
+      banner : '',
+      name : '',
+      posts : [],
+      bio : '',
+      contact: '',
+      booking: true,
+      location: '',
+      style : [],
+      tattoist : false,
     }
   },
   methods: {
@@ -112,6 +119,11 @@ export default {
         querySnapshot.forEach((doc) => {
           this.posts.push(doc.data());
         });
+    },
+    openModal(data) {
+      this.modalData = data;
+      this.modalVisible = true;
+      console.log('clicked : ' , data);
     },
   },
   activated(){

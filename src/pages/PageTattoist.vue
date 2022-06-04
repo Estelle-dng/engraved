@@ -46,7 +46,7 @@ import { collection, query, where, getDocs, getFirestore, doc, getDoc, orderBy }
 const db = getFirestore();
 const posts = collection(db, "posts");
 export default {
-  name: 'PageProfile',
+  name: 'PageTattoist',
   components: {
     'modal' : require('components/Modal.vue').default,
   },
@@ -89,7 +89,7 @@ export default {
           this.posts.push(doc.data());
         });
     },
-     openModal(data) {
+    openModal(data) {
       this.modalData = data;
       this.modalVisible = true;
       console.log('clicked : ' , data);

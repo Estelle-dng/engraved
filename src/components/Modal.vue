@@ -24,7 +24,7 @@
         <q-separator />
         <q-card-actions align="right">
           <q-btn v-close-popup flat color="grey-10" label="Close" @click="$emit('close')"/>
-          <q-btn v-close-popup flat color="red" label="Delete" @click="confirm = true" />
+          <q-btn v-close-popup flat color="red" label="Delete" @click="confirm = true" v-if="profilePage"/>
         </q-card-actions>
       </q-card>
 
@@ -41,7 +41,6 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-
   </div>
 </template>
 
@@ -52,6 +51,7 @@ export default {
   data (){
     return {
       confirm: false,
+      profilePage: false,
     }
   },
   methods: {
@@ -63,7 +63,17 @@ export default {
               { label: 'Dismiss', color: 'white' }
             ]
         });
+    },
+    checkUrl(){
+      const currentUrl = window.location.href.indexOf("profile");
+      if(currentUrl != -1){
+        this.profilePage = true;
+      }
+      console.log(this.profilePage);
     }
+  },
+  created(){
+    this.checkUrl();
   }
 }
 </script>
