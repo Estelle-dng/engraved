@@ -68,6 +68,7 @@ import { collection, query, where, getDocs, getFirestore, doc, getDoc } from "fi
 const db = getFirestore();
 const posts = collection(db, "posts");
 const auth = getAuth();
+const user = auth.currentUser;
 export default {
   name: 'PageProfile',
   components: {
@@ -75,6 +76,7 @@ export default {
   },
   data(){
     return{
+      uid : '',
       modalVisible: false,
       modalData: null,
       email : '',
@@ -90,28 +92,29 @@ export default {
     }
   },
   methods: {
-    getUserData(){
-      onAuthStateChanged(auth, (user) => {
-        if (user.uid) {
+    async getUserData(){
+      auth.onAuthStateChanged((user) => {
+        if (user != null) {
+          this.uid = user.uid;
           this.email = user.email;
           const userInfo = doc(db, "users", user.uid);
           getDoc(userInfo).then(res => {
             //console.log('user info : ', res.data());
-            let user = res.data();
-            this.name = user.name;
-            this.bio = user.bio;
-            this.contact = user.contact;
-            this.style = user.style;
-            this.location = user.location;
-            this.banner = user.photo;
-            this.booking = user.booking;
-            this.tattoist = user.tattoist;
+            let getUser = res.data();
+            this.name = getUser.name;
+            this.bio = getUser.bio;
+            this.contact = getUser.contact;
+            this.style = getUser.style;
+            this.location = getUser.location;
+            this.banner = getUser.photo;
+            this.booking = getUser.booking;
+            this.tattoist = getUser.tattoist;
           }).catch(err => {console.log('error : ', err);});
+          this.getPosts();
         } else {
           this.$router.push('/auth');
         }
-      },
-       () =>  this.$router.push('/auth'));
+      });
     },
     async getPosts(){
         const q = query(posts , where("userId", "==", getAuth().currentUser.uid));
@@ -126,13 +129,11 @@ export default {
       console.log('clicked : ' , data);
     },
   },
-  activated(){
-    this.getUserData();
-    this.getPosts();
+  async activated(){
+    await this.getUserData();
   },
-  created(){
-    this.getUserData();
-    this.getPosts();
+  async created(){
+    await this.getUserData();
   }
 }
 </script>

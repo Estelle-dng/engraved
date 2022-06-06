@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, browserLocalPersistence, setPersistence } from "firebase/auth";
 import { setDoc, doc, getFirestore } from "firebase/firestore";
 const db = getFirestore();
 const auth = getAuth();
@@ -104,7 +104,10 @@ export default {
   methods: {
     onSubmit () {
       if (this.tab === 'login') {
-        this.signInExistingUser()
+        setPersistence(auth, browserLocalPersistence).then(() => {
+          this.signInExistingUser();
+          }
+        );
       } else {
           if (this.formData.accept !== true) {
           this.$q.notify({
@@ -125,24 +128,26 @@ export default {
       }
     },
     google () {
-      signInWithPopup(auth, provider)
-        .then((result) => {
-          const userInfo = result.user;
-          const user = doc(db, 'users', auth.currentUser.uid);
-          setDoc(user, { name: userInfo.displayName, tattoist : false, photo: userInfo.photoURL }, { merge: true });
-          // ...
-          this.$router.push('/');
-          this.$q.notify({
-            message: 'User logged!',
-            actions: [
-              { label: 'Dismiss', color: 'white' }
-            ]
-          })
-        }).catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          const email = error.email;
-          const credential = GoogleAuthProvider.credentialFromError(error);
+      setPersistence(auth, browserLocalPersistence).then(() => {
+        signInWithPopup(auth, provider)
+          .then((result) => {
+            const userInfo = result.user;
+            const user = doc(db, 'users', auth.currentUser.uid);
+            setDoc(user, { name: userInfo.displayName, tattoist : false, photo: userInfo.photoURL }, { merge: true });
+            // ...
+            this.$router.push('/');
+            this.$q.notify({
+              message: 'User logged!',
+              actions: [
+                { label: 'Dismiss', color: 'white' }
+              ]
+            })
+          }).catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            const email = error.email;
+            const credential = GoogleAuthProvider.credentialFromError(error);
+          });
         });
     },
     signInExistingUser(){

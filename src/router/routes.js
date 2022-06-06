@@ -40,7 +40,6 @@ const routes = [
       name: 'Profile',
       meta:{
         title: "Profile",
-        requiresAuth: true
       }},
 
       { path: '/tattoist',
@@ -56,7 +55,6 @@ const routes = [
       name: 'Settings',
       meta:{
         title: "Settings",
-        requiresAuth: true
       }},
 
       { path: '/auth',

@@ -131,9 +131,9 @@ export default {
     },
   },
   methods: {
-    getUserData(){
+    async getUserData(){
       onAuthStateChanged(auth, (user) => {
-        if (user.uid) {
+        if (user != null) {
           const userInfo = doc(db, "users", user.uid);
           getDoc(userInfo).then(res => {
             let user = res.data();
@@ -249,11 +249,11 @@ export default {
     deleteUser(){
     },
   },
-  activated(){
-    this.getUserData();
+  async activated(){
+    await this.getUserData();
   },
-  created(){
-    this.getUserData();
+  async created(){
+    await this.getUserData();
   }
 }
 </script>
