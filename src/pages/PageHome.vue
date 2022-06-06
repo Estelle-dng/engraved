@@ -161,11 +161,13 @@ export default {
   },
   methods:{
     getPosts(){
+      this.$q.loading.show();
       this.loadingPosts = true;
       this.$axios.get(`${process.env.API}/posts`).then(response => {
         this.posts = response.data;
         if(!navigator.onLine){this.getOfflinePosts();}
         this.loadingPosts = false;
+        this.$q.loading.hide();
       }
       ).catch(err => {
         if(navigator.onLine){
@@ -174,6 +176,7 @@ export default {
           message: 'Could not find posts',
         });
           this.loadingPosts = false;
+          this.$q.loading.hide();
         }
       });
     },

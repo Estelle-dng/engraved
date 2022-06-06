@@ -1,10 +1,20 @@
 <template>
   <q-page class="constrain q-pa-md">
-    <q-input color="grey-10" v-model="search" type="search" label="Search a #, username, location..." class="q-mb-md">
+     <q-input
+        v-model="search"
+        class="q-mb-md"
+        color="grey-10"
+        label="Search a #, username, location..."
+        type="search"
+        :rules="[val=> !!val || 'Type something']"
+        debounce="4000"
+        @change="pressed()"
+      >
         <template v-slot:append>
-          <q-icon name="search" />
+         <q-icon @click="pressed()" name="search"/>
         </template>
       </q-input>
+
     <q-infinite-scroll class="row ">
       <template v-if="!loadingPosts && posts.length">
         <q-card
@@ -56,8 +66,8 @@
       </q-card-section>
     </q-card>
       </template>
-      <template v-else-if="!loadingPosts && !posts.length">
-        <h5 class="m0-auto" >No posts yet</h5>
+      <template v-else-if="!loadingPosts && !posts.length && search">
+        <h5 class="m0-auto">There is no result for your research</h5>
       </template>
       <template v-else-if="loadingPosts && posts.length">
         <q-card
@@ -91,44 +101,36 @@
 
 <script>
 import { date } from 'quasar';
+import { collection, query, where, getDocs, getFirestore, doc, getDoc } from "firebase/firestore";
+const db = getFirestore();
+const posts = collection(db, "posts");
 export default {
   name: 'PageSearch',
   data(){
     return{
+      search: '',
       posts: [],
       loadingPosts: false,
       search: '',
     }
   },
   methods:{
-    getPosts(){
-      this.loadingPosts = true;
-      this.$axios.get(`${process.env.API}/posts`).then(response => {
-        console.log(response);
-        this.posts = response.data;
-        this.loadingPosts = false;
-      }
-      ).catch(err => {
-        if(navigator.onLine){
-          this.$q.dialog({
-          title: 'Error',
-          message: 'Could not find posts',
-        });
-          this.loadingPosts = false;
-        }
+    ///////
+    async pressed(){
+      this.$q.loading.show();
+      const q = query(posts, where("hashtags", "array-contains", this.search));
+      const querySnapshot = await getDocs(q);
+      this.posts = [];
+      querySnapshot.forEach((doc) => {
+        this.posts.push(doc.data());
       });
+      this.$q.loading.hide();
     },
   },
   filters: {
     formattedDate(value){
       return date.formatDate(value, 'D MMM YYYY');
     }
-  },
-  activated() {
-    this.getPosts();
-  },
-  created() {
-    this.getPosts();
   },
 }
 </script>
