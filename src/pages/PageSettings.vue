@@ -147,7 +147,7 @@ export default {
             this.baseUrl = user.photo;
           }).catch(err => {console.log('error : ', err);});
         } else {
-          console.log('User is signed out');
+          this.$router.push('/auth');
         }
       });
     },
