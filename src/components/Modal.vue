@@ -56,7 +56,6 @@ export default {
   },
   methods: {
     deletePost(){
-        console.log('delete post');
         this.$q.notify({
             message: 'Post Deleted',
             actions: [

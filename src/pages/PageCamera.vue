@@ -216,7 +216,6 @@ export default {
       navigator.geolocation.getCurrentPosition(position => {
         this.getCityAndCountry(position);
       }, err => {
-        console.log('err : ', err);
         this.locationError();
         }, {timeout: 7000}
       )
@@ -226,7 +225,6 @@ export default {
         this.$axios.get(apiUrl).then(result => {
           this.locationSuccess(result);
         }).catch(err =>{
-          console.log('err : ', err);
           this.locationError();
         })
     },
@@ -267,7 +265,6 @@ export default {
         formData.append('hashtags', this.post.hashtags)
 
         this.$axios.post(`${ process.env.API }/createPost`, formData).then(response => {
-          //console.log('response: ', response);
           this.$q.localStorage.set('postCreated', true);
           this.$router.push('/');
           this.$q.notify({

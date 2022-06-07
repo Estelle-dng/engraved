@@ -85,25 +85,21 @@ export default {
         const q = query(posts , where("userId", "==", selectedUid), orderBy('date', 'desc'));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-          console.log(doc.id, " => ", doc.data());
           this.posts.push(doc.data());
         });
     },
     openModal(data) {
       this.modalData = data;
       this.modalVisible = true;
-      console.log('clicked : ' , data);
     },
   },
   activated(){
     this.selectedUid = this.$route.params.id;
     this.getUserData(this.selectedUid);
-    console.log(this.$route.params.id);
   },
   created(){
    this.selectedUid = this.$route.params.id;
-    this.getUserData(this.selectedUid);
-    console.log(this.$route.params);
+  this.getUserData(this.selectedUid);
   }
 }
 </script>

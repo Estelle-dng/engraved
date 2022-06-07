@@ -51,7 +51,6 @@ export default {
       this.loadingUsers = true;
 
       this.$axios.get(`${process.env.API}/users`).then(response => {
-        console.log(response);
         this.users = response.data;
         // can get diplayName and photoURL
         this.loadingUsers = false;

@@ -15,8 +15,8 @@
         </template>
       </q-input>
 
-    <q-infinite-scroll class="row ">
-      <template v-if="!loadingPosts && posts.length">
+    <q-infinite-scroll class="row">
+      <template v-if="posts.length">
         <q-card
        v-for="post in posts"
        :key="post.id"
@@ -33,7 +33,7 @@
           </q-avatar>
         </q-item-section>
         <q-item-section>
-          <router-link class="title" :to="{ name: 'Tattoist', params: { id : post.userId} }">{{post.userName}}</router-link>
+          <router-link class="title" :to="{ name: 'Tattoist', params: { id : post.id} }">{{post.userName}}</router-link>
           <q-item-label caption>
             <q-icon v-if="post.location"
             name="eva-pin-outline"
@@ -66,34 +66,8 @@
       </q-card-section>
     </q-card>
       </template>
-      <template v-else-if="!loadingPosts && !posts.length && search">
+      <template v-else-if="!posts.length && search">
         <h5 class="m0-auto">There is no result for your research</h5>
-      </template>
-      <template v-else-if="loadingPosts && posts.length">
-        <q-card
-        class=" card-post col-sm-12 col-xs-12 col-md-4"
-        flat
-        bordered
-        >
-          <q-item>
-            <q-item-section avatar>
-              <q-skeleton type="QAvatar" animation="fade" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>
-                <q-skeleton type="text" animation="fade" />
-              </q-item-label>
-              <q-item-label caption>
-                <q-skeleton type="text" animation="fade" />
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-skeleton height="200px" square animation="fade" />
-          <q-card-section>
-            <q-skeleton type="text" class="text-subtitle2" animation="fade" />
-            <q-skeleton type="text" width="50%" class="text-subtitle2" animation="fade" />
-          </q-card-section>
-        </q-card>
       </template>
     </q-infinite-scroll>
   </q-page>
@@ -110,22 +84,39 @@ export default {
     return{
       search: '',
       posts: [],
-      loadingPosts: false,
       search: '',
     }
   },
   methods:{
-    ///////
     async pressed(){
       this.$q.loading.show();
-      const q = query(posts, where("hashtags", "array-contains", this.search));
-      const querySnapshot = await getDocs(q);
-      this.posts = [];
-      querySnapshot.forEach((doc) => {
-        this.posts.push(doc.data());
-      });
-      this.$q.loading.hide();
+      try{
+        this.posts = [];
+        const q = query(posts, where("hashtags", "array-contains", this.search));
+        const u = query(posts, where("userName", "==", this.search));
+        const l = query(posts, where("location", ">=", this.search));
+        const querySnapshot = await getDocs(q);
+        const querySnapshotUsers = await getDocs(u);
+        const querySnapshotLoc = await getDocs(l);
+        querySnapshot.forEach((doc) => {
+          this.posts.push(doc.data());
+        });
+        querySnapshotUsers.forEach((doc) => {
+          this.posts.push(doc.data());
+        });
+        querySnapshotLoc.forEach((doc) => {
+          this.posts.push(doc.data());
+        });
+        this.posts = this.getUniqueListBy(this.posts, 'id');
+        this.$q.loading.hide();
+      }
+      catch(e){
+        this.$q.loading.hide();
+      }
     },
+    getUniqueListBy(arr, key) {
+    return [...new Map(arr.map(item => [item[key], item])).values()]
+    }
   },
   filters: {
     formattedDate(value){
@@ -151,5 +142,9 @@ export default {
       color: black;
       }
     .q-pt-0{padding-top: 0 !important}
+    .margin-y-auto{
+      margin-top: auto !important;
+      margin-bottom: auto !important;
+    }
   }
 </style>

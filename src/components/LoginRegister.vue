@@ -167,7 +167,6 @@ export default {
         this.$q.loading.hide();
       })
       .catch((error) => {
-        console.log(error.code);
         if(error.code == "auth/wrong-password"){
           this.isValid = false;
           this.errorMessage = "Wrong password."
@@ -192,7 +191,6 @@ export default {
       const tattoist = this.formData.tattoist;
       const accepted = this.formData.accept;
       const userName = this.formData.name;
-      console.log('register');
       createUserWithEmailAndPassword(auth, email, password, userName, tattoist, accepted)
         .then(() => {
           const user = doc(db, 'users', auth.currentUser.uid);

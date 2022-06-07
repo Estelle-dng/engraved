@@ -77,12 +77,12 @@
             /> {{post.location}}
           </q-item-label>
         </q-item-section>
-        <q-item-section class="items-end">
+       <!--  <q-item-section class="items-end">
             <q-icon
             name="eva-plus-circle-outline"
             size="md"
             />
-        </q-item-section>
+        </q-item-section> -->
       </q-item>
       <q-separator />
       <q-card-section class="row">
@@ -99,7 +99,7 @@
       <q-card-section class="q-pt-0">
         <div class="row">
           <q-chip class="bg-grey-9 text-white" v-for="hashtag in post.hashtags" :key="hashtag"><span v-if="!hashtag"></span>{{hashtag}}</q-chip>
-      </div>
+        </div>
       </q-card-section>
     </q-card>
       </template>
@@ -139,7 +139,10 @@
 <script>
 import { date } from 'quasar';
 import { openDB } from 'idb';
+import { collection, query, getDocs, getFirestore, orderBy } from "firebase/firestore";
 let qs = require('qs');
+const db = getFirestore();
+const posts = collection(db, "posts");
 export default {
   name: 'PageHome',
   data(){
@@ -160,16 +163,21 @@ export default {
     }
   },
   methods:{
-    getPosts(){
+    async getPosts(){
       this.$q.loading.show();
       this.loadingPosts = true;
-      this.$axios.get(`${process.env.API}/posts`).then(response => {
-        this.posts = response.data;
+      try{
+        const q = query(posts, orderBy("date", "desc"));
+        const querySnapshot = await getDocs(q);
+        this.posts = [];
+        querySnapshot.forEach((doc) => {
+          this.posts.push(doc.data());
+        });
         if(!navigator.onLine){this.getOfflinePosts();}
         this.loadingPosts = false;
         this.$q.loading.hide();
       }
-      ).catch(err => {
+      catch(err) {
         if(navigator.onLine){
           this.$q.dialog({
           title: 'Error',
@@ -178,7 +186,7 @@ export default {
           this.loadingPosts = false;
           this.$q.loading.hide();
         }
-      });
+      };
     },
     getOfflinePosts() {
       openDB('workbox-background-sync').then(db => {

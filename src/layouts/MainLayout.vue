@@ -295,10 +295,7 @@ export default {
       // Wait for the user to respond to the prompt
       deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted the install prompt');
           this.neverShowAppInstallBanner()
-        } else {
-          console.log('User dismissed the install prompt');
         }
       });
     },
@@ -322,7 +319,6 @@ export default {
           getDoc(userInfo).then(res => {
             let user = res.data();
             this.userIsTattoist = user.tattoist;
-            //console.log(this.userIsTattoist);
           }).catch(err => {console.log('error : ', err);});
         } else {
           this.logged = false;
@@ -339,7 +335,6 @@ export default {
         // Stash the event so it can be triggered later.
         deferredPrompt = e;
         // Update UI notify the user they can install the PWA
-        //console.log(`'beforeinstallprompt' event was fired.`);
         setTimeout(() => {
           this.showAppInstallBanner = true
         }, 3000);

@@ -64,7 +64,7 @@
 
 <script>
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { collection, query, where, getDocs, getFirestore, doc, getDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, getFirestore, doc, getDoc, orderBy } from "firebase/firestore";
 const db = getFirestore();
 const posts = collection(db, "posts");
 const auth = getAuth();
@@ -99,7 +99,6 @@ export default {
           this.email = user.email;
           const userInfo = doc(db, "users", user.uid);
           getDoc(userInfo).then(res => {
-            //console.log('user info : ', res.data());
             let getUser = res.data();
             this.name = getUser.name;
             this.bio = getUser.bio;
@@ -117,7 +116,7 @@ export default {
       });
     },
     async getPosts(){
-        const q = query(posts , where("userId", "==", getAuth().currentUser.uid));
+        const q = query(posts , where("userId", "==", getAuth().currentUser.uid), orderBy("date", "desc"));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
           this.posts.push(doc.data());
@@ -126,7 +125,6 @@ export default {
     openModal(data) {
       this.modalData = data;
       this.modalVisible = true;
-      console.log('clicked : ' , data);
     },
   },
   async activated(){
