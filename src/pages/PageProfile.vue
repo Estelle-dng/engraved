@@ -40,7 +40,7 @@
         <q-img :src="post.imageUrl"/>
        </q-card>
     </section>
-    <modal v-if="modalVisible" @close="modalVisible = false" :data="modalData"/>
+    <modal v-if="modalVisible" @close="modalVisible = false" :data="modalData" @delete="posts = []; getPosts()"/>
   </q-page>
 
   <q-page class="q-pa-md" v-else>

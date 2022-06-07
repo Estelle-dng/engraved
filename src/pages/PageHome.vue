@@ -287,13 +287,13 @@ export default {
             badge: 'icons/icon-128x128.png',
             lang: 'en-US',
             vibrate: [100, 50, 200],
-            actions: [
+            /* actions: [
               {
                 action : 'hello',
                 title : 'hello',
                 icon : 'icons/icon-128x128.png'
-              },
-            ]
+              } ,
+            ]*/
           });
         });
       }

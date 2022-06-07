@@ -37,7 +37,7 @@
 
           <q-card-actions align="right">
           <q-btn flat label="Cancel" color="grey-10" v-close-popup/>
-          <q-btn flat label="Delete" color="red" v-close-popup @click="deletePost(); $emit('close')"/>
+          <q-btn flat label="Delete" color="red" v-close-popup @click="deletePost(); $emit('close'); $emit('delete')"/>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -45,6 +45,8 @@
 </template>
 
 <script>
+import { doc, deleteDoc, getFirestore } from "firebase/firestore";
+const db = getFirestore();
 export default {
   name: "Modal",
   props: ['data'],
@@ -55,13 +57,15 @@ export default {
     }
   },
   methods: {
-    deletePost(){
-        this.$q.notify({
-            message: 'Post Deleted',
-            actions: [
-              { label: 'Dismiss', color: 'white' }
-            ]
-        });
+    async deletePost(){
+      let id = this.data.id;
+      await deleteDoc(doc(db, "posts", id));
+      this.$q.notify({
+          message: 'Post Deleted',
+          actions: [
+            { label: 'Dismiss', color: 'white' }
+          ]
+      });
     },
     checkUrl(){
       const currentUrl = window.location.href.indexOf("profile");

@@ -75,7 +75,7 @@
 
 <script>
 import { date } from 'quasar';
-import { collection, query, where, getDocs, getFirestore, doc, getDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, getFirestore } from "firebase/firestore";
 const db = getFirestore();
 const posts = collection(db, "posts");
 export default {
