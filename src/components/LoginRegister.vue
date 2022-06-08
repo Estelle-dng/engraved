@@ -195,8 +195,6 @@ export default {
         .then(() => {
           const user = doc(db, 'users', auth.currentUser.uid);
           setDoc(user, { name: userName, tattoist : tattoist }, { merge: true });
-
-          this.$router.push('/');
           this.$q.notify({
             message: 'User created!',
             actions: [
@@ -208,6 +206,7 @@ export default {
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
+          console.log('error : ', errorCode, " /// error : ", errorMessage);
           this.$q.loading.hide();
         });
     },

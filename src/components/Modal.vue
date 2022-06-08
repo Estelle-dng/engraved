@@ -31,7 +31,7 @@
       <q-dialog v-model="confirm" persistent>
         <q-card>
           <q-card-section class="row items-center">
-            <q-avatar icon="eva-delete" color="red" text-color="white"/>
+            <q-avatar icon="eva-alert-circle-outline" color="red" text-color="white"/>
             <span class="q-ml-sm">Are you sure to delete this post ?</span>
           </q-card-section>
 

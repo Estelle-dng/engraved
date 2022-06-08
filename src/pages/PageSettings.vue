@@ -90,28 +90,41 @@
       <q-separator class="q-ma-lg"/>
       <section class="row justify-center q-pa-lg">
         <q-btn
-        @click="deleteUser()"
+        @click="confirm = true"
         color="grey-7"
         icon="eva-person-delete"
         label="Delete user"
         />
+        <q-dialog v-model="confirm" persistent>
+          <q-card>
+            <q-card-section class="row items-center">
+              <q-avatar icon="eva-delete" color="red" text-color="white"/>
+              <span class="q-ml-sm">Are you sure to delete your account ?</span>
+            </q-card-section>
+
+            <q-card-actions align="right">
+            <q-btn flat label="Cancel" color="grey-10" v-close-popup/>
+            <q-btn flat label="Delete" color="red" v-close-popup @click="deleteCurrentUser()"/>
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </section>
   </q-page>
 </template>
 
 <script>
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, deleteUser } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { uuid } from 'uuidv4';
 const storage = getStorage();
 const db = getFirestore();
 const auth = getAuth();
-
 export default {
   name: 'PageSettings',
   data(){
     return{
+       confirm : false,
        locationLoading: false,
        style: [],
        bio : '',
@@ -244,7 +257,23 @@ export default {
         });
       });
     },
-    deleteUser(){
+    deleteCurrentUser(){
+      let uid = auth.currentUser.uid;
+      deleteUser(auth.currentUser).then(() => {
+        deleteDoc(doc(db, "users", uid));
+        const posts = collection(db, "posts");
+        const q = query(posts , where("userId", "==", uid));
+        deleteDoc(q);
+        this.$q.notify({
+            message: 'User deleted',
+            actions: [
+              { label: 'Dismiss', color: 'white' }
+            ]
+        });
+        this.$router.push('/');
+      }).catch((error) => {
+        this.$q.notify('Error, can\'t delete your account : ', err);
+      });
     },
   },
   async activated(){
