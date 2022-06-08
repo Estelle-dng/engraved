@@ -305,7 +305,7 @@ export default {
     },
     logout() {
       auth.signOut()
-      this.$router.push('/')
+      this.$router.push('/home')
         .then(() => {
         this.$q.notify({message: 'Sign Out Success.'})
       })

@@ -120,6 +120,7 @@ import { uuid } from 'uuidv4';
 const storage = getStorage();
 const db = getFirestore();
 const auth = getAuth();
+const uid = auth.currentUser.uid;
 export default {
   name: 'PageSettings',
   data(){
@@ -151,15 +152,15 @@ export default {
           getDoc(userInfo).then(res => {
             let user = res.data();
             this.tattoist = user.tattoist;
-            this.bio = user.bio;
-            this.contact = user.contact;
-            this.style = user.style;
-            this.location = user.location;
-            this.bannerUrl = user.photo;
-            this.booking = user.booking;
-            this.baseUrl = user.photo;
-            if(user.booking == undefined) this.booking = false;
-            if(user.style == undefined) this.style = [];
+
+            this.bio = user.bio ? user.bio : this.bio;
+            this.contact = user.contact ? user.contact : this.contact;
+            this.style = user.style ? user.style : this.style;
+            this.location = user.location ? user.location : this.location;
+            this.bannerUrl = user.photo ? user.photo : this.bannerUrl;
+            this.booking = user.booking ? user.booking : this.booking;
+            this.baseUrl = user.photo ? user.photo : this.baseUrl;
+
           }).catch(err => {console.log('error : ', err);});
         } else {
           this.$router.push('/auth');
@@ -260,21 +261,20 @@ export default {
       });
     },
     deleteCurrentUser(){
-      let uid = auth.currentUser.uid;
-      deleteUser(auth.currentUser).then(() => {
-        deleteDoc(doc(db, "users", uid));
+      deleteUser(auth.currentUser).then(async () => {
+        await deleteDoc(doc(db, "users", uid));
         const posts = collection(db, "posts");
         const q = query(posts , where("userId", "==", uid));
-        deleteDoc(q);
+        await deleteDoc(q);
         this.$q.notify({
             message: 'User deleted',
             actions: [
               { label: 'Dismiss', color: 'white' }
             ]
         });
-        this.$router.push('/');
+        this.$router.push('/home');
       }).catch((error) => {
-        this.$q.notify('Error, can\'t delete your account : ', err);
+        this.$q.notify('Error, can\'t delete your account : ', error);
       });
     },
   },

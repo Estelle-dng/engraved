@@ -202,6 +202,7 @@ export default {
             ]
           })
           this.$q.loading.hide();
+          this.$router.push('/auth');
         })
         .catch((error) => {
           const errorCode = error.code;
