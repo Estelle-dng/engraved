@@ -96,19 +96,19 @@ export default {
         this.posts = [];
         const q = query(posts, where("hashtags", "array-contains", this.search));
         const u = query(posts, where("userName", "==", this.search));
-        const l = query(posts, where("location", ">=", this.search));
+        //const l = query(posts, where("location", ">=", this.search));
         const querySnapshot = await getDocs(q);
         const querySnapshotUsers = await getDocs(u);
-        const querySnapshotLoc = await getDocs(l);
+        //const querySnapshotLoc = await getDocs(l);
         querySnapshot.forEach((doc) => {
           this.posts.push(doc.data());
         });
         querySnapshotUsers.forEach((doc) => {
           this.posts.push(doc.data());
         });
-        querySnapshotLoc.forEach((doc) => {
+        /* querySnapshotLoc.forEach((doc) => {
           this.posts.push(doc.data());
-        });
+        }); */
         this.posts = this.getUniqueListBy(this.posts, 'id');
         this.$q.loading.hide();
       }
@@ -127,3 +127,27 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+  .card-post{
+    @media (min-width: $breakpoint-md-min) {
+      width: 32% !important;
+      margin: 0 auto 16px auto;
+    }
+    .q-img{
+      min-height: 200px;
+      max-height: 500px;
+    }
+    .title{
+      font-weight: 700;
+      text-decoration: none;
+      color: black;
+      }
+    .q-pt-0{padding-top: 0 !important}
+    .margin-y-auto{
+      margin-top: auto !important;
+      margin-bottom: auto !important;
+    }
+  }
+  .link{text-decoration: none;}
+</style>

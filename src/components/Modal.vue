@@ -92,7 +92,7 @@ export default {
   background-color: rgba($color: #000000, $alpha: 0.7);
   .card{
     width: 70vw;
-    max-width: 400px;
+    max-width: 300px;
     }
 }
 </style>

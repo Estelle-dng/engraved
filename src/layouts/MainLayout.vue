@@ -10,7 +10,6 @@
               <img src="../assets/logo-engraved-dark.png">
           </q-avatar>
         </q-btn>
-        <!-- <q-btn to="/tattoist">tattoist</q-btn> -->
         <q-separator class="large-screen-only" dark vertical inset />
         <q-toolbar-title class="title col text-center text-sm-left">
           Engraved
@@ -74,6 +73,7 @@
                 name="Home"
                 to="/"
                 clickable
+                active-class="red-9"
               >
                 <q-item-section avatar>
                   <q-icon name="eva-home-outline" />
@@ -90,6 +90,7 @@
                 name="Search"
                 to="/search"
                 clickable
+                active-class="red-9"
               >
                 <q-item-section avatar>
                   <q-icon name="eva-search-outline" />
@@ -106,6 +107,7 @@
                 name="Profile"
                 to="/profile"
                 clickable
+                active-class="red-9"
               >
                 <q-item-section avatar>
                   <q-icon name="eva-person-outline" />
@@ -122,6 +124,7 @@
                 name="Settings"
                 to="/settings"
                 clickable
+                active-class="red-9"
               >
                 <q-item-section avatar>
                   <q-icon name="eva-settings-2-outline" />
@@ -139,6 +142,7 @@
                 name="Camera"
                 to="/camera"
                 clickable
+                active-class="red-9"
               >
                 <q-item-section avatar>
                   <q-icon name="eva-camera-outline" />
@@ -157,6 +161,7 @@
                 name="Login"
                 to="/auth"
                 clickable
+                active-class="red-9"
               >
                 <q-item-section avatar>
                   <q-icon name="eva-log-in-outline" />
@@ -172,6 +177,7 @@
                 name="Logout"
                 to="/"
                 clickable
+                active-class="red-9"
                 @click="logout()"
               >
                 <q-item-section avatar>
@@ -349,3 +355,7 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  .red-9{color:#f16258;}
+</style>
