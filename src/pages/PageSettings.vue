@@ -36,7 +36,7 @@
         />
     </div>
     <section v-if="tattoist">
-      <div class="row justify-center">
+      <div v-if="style" class="row justify-center">
         <div class="col-sm-3 col-xs-6 q-pa-sm"><q-input clearable filled color="grey-10"  v-model="style[0]" label="Art style 1" /></div>
         <div class="col-sm-3 col-xs-6 q-pa-sm"><q-input clearable filled color="grey-10"  v-model="style[1]" label="Art style 2" /></div>
         <div class="col-sm-3 col-xs-6 q-pa-sm"><q-input clearable filled color="grey-10"  v-model="style[2]" label="Art style 3" /></div>
@@ -98,7 +98,7 @@
         <q-dialog v-model="confirm" persistent>
           <q-card>
             <q-card-section class="row items-center">
-              <q-avatar icon="eva-delete" color="red" text-color="white"/>
+              <q-avatar icon="eva-alert-circle-outline" color="red" text-color="white"/>
               <span class="q-ml-sm">Are you sure to delete your account ?</span>
             </q-card-section>
 
@@ -158,6 +158,8 @@ export default {
             this.bannerUrl = user.photo;
             this.booking = user.booking;
             this.baseUrl = user.photo;
+            if(user.booking == undefined) this.booking = false;
+            if(user.style == undefined) this.style = [];
           }).catch(err => {console.log('error : ', err);});
         } else {
           this.$router.push('/auth');
