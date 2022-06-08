@@ -35,7 +35,7 @@
        bordered
        flat
       >
-        <q-img :src="post.imageUrl"/>
+        <q-img class="post-image" :src="post.imageUrl"/>
        </q-card>
     </section>
     <modal v-if="modalVisible" @close="modalVisible = false" :data="modalData" @delete="posts = []; getPosts()"/>
@@ -149,4 +149,8 @@ export default {
   .font-weight-medium{font-weight : 600;}
   .banner{max-height: 300px;}
   .follow{max-height: 36px;}
+  .post-image{
+    object-fit:cover;
+    height: 100%;
+    }
 </style>
