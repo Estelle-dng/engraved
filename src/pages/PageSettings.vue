@@ -120,7 +120,7 @@ import { uuid } from 'uuidv4';
 const storage = getStorage();
 const db = getFirestore();
 const auth = getAuth();
-const uid = auth.currentUser.uid;
+const user = auth.currentUser;
 export default {
   name: 'PageSettings',
   data(){
@@ -146,7 +146,7 @@ export default {
   },
   methods: {
     async getUserData(){
-      onAuthStateChanged(auth, (user) => {
+      auth.onAuthStateChanged((user) => {
         if (user != null) {
           const userInfo = doc(db, "users", user.uid);
           getDoc(userInfo).then(res => {
@@ -261,6 +261,7 @@ export default {
       });
     },
     deleteCurrentUser(){
+      const uid = user.uid;
       deleteUser(auth.currentUser).then(async () => {
         await deleteDoc(doc(db, "users", uid));
         const posts = collection(db, "posts");
