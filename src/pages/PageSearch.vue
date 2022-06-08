@@ -24,6 +24,7 @@
        bordered
        flat
      >
+     <router-link class="link" :to="{ name: 'Tattoist', params: { id : post.userId} }">
       <q-img :src="post.imageUrl"/>
       <q-item>
         <q-item-section avatar>
@@ -40,15 +41,15 @@
             /> {{post.location}}
           </q-item-label>
         </q-item-section>
-        <q-item-section class="items-end">
+       <!--  <q-item-section class="items-end">
             <q-icon
             name="eva-plus-circle-outline"
             size="md"
             />
-        </q-item-section>
+        </q-item-section> -->
       </q-item>
       <q-separator />
-      <q-card-section class="row">
+      <q-card-section class="row text-black">
         {{post.caption}}
         <q-separator vertical inset />
         <q-item-label class="col text-right">
@@ -64,6 +65,7 @@
           <q-chip class="bg-grey-9 text-white" v-for="hashtag in post.hashtags" :key="hashtag"><span v-if="!hashtag"></span>{{hashtag}}</q-chip>
       </div>
       </q-card-section>
+      </router-link>
     </q-card>
       </template>
       <template v-else-if="!posts.length && search">
@@ -125,26 +127,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss">
-  .card-post{
-    @media (min-width: $breakpoint-md-min) {
-      width: 32% !important;
-      margin: 0 auto 16px auto;
-    }
-    .q-img{
-      min-height: 200px;
-      max-height: 500px;
-    }
-    .title{
-      font-weight: 700;
-      text-decoration: none;
-      color: black;
-      }
-    .q-pt-0{padding-top: 0 !important}
-    .margin-y-auto{
-      margin-top: auto !important;
-      margin-bottom: auto !important;
-    }
-  }
-</style>

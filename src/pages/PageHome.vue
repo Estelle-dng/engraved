@@ -54,6 +54,7 @@
        bordered
        flat
      >
+     <router-link class="link" :to="{ name: 'Tattoist', params: { id : post.userId} }">
       <q-badge
         v-if="post.offline"
         class="q-ma-sm absolute-top-right badge-offline"
@@ -85,7 +86,7 @@
         </q-item-section> -->
       </q-item>
       <q-separator />
-      <q-card-section class="row">
+      <q-card-section class="row text-black">
         {{post.caption}}
         <q-separator vertical inset />
         <q-item-label class="col text-right">
@@ -101,6 +102,7 @@
           <q-chip class="bg-grey-9 text-white" v-for="hashtag in post.hashtags" :key="hashtag"><span v-if="!hashtag"></span>{{hashtag}}</q-chip>
         </div>
       </q-card-section>
+      </router-link>
     </q-card>
       </template>
       <template v-else-if="!loadingPosts && !posts.length">
@@ -325,6 +327,7 @@ export default {
       margin: 0 auto 16px auto;
     }
     .q-img{
+      height: 300px;
       min-height: 200px;
       max-height: 500px;
     }
@@ -338,5 +341,6 @@ export default {
       color: black;
       }
     .q-pt-0{padding-top: 0 !important}
+    .link{text-decoration: none;}
   }
 </style>
