@@ -42,7 +42,7 @@ const routes = [
         title: "Profile",
       }},
 
-      { path: '/tattoist',
+      { path: '/tattoist/:id',
       component: () => import('src/pages/PageTattoist.vue'),
       name: 'Tattoist',
       props: true,

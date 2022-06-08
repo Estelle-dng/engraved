@@ -30,7 +30,7 @@
        v-for="post in posts"
        @click="openModal(post)"
        :key="post.id"
-       class="card-post q-mb-md col-sm-4 col-xs-4 col-md-4"
+       class="card-post card-img q-mb-md col-sm-4 col-xs-4 col-md-4"
        bordered
        flat
       >
@@ -108,4 +108,11 @@ export default {
   .font-weight-medium{font-weight:700;}
   .banner{max-height: 300px;}
   .follow{max-height: 36px;}
+  .card-img{
+  height: 300px !important;
+    .q-img{
+      height:100% !important;
+      object-fit:cover;
+    }
+  }
 </style>

@@ -143,7 +143,6 @@ export default {
     object-fit: cover;
     overflow: hidden;
     .q-img{height: 100%}
-
   }
   .q-ma-0{margin: 0 !important}
   .font-weight-medium{font-weight : 600;}
@@ -151,10 +150,9 @@ export default {
   .follow{max-height: 36px;}
   .card-img{
     height: 300px;
-    object-fit: cover;
-    .post-image{
+    .q-img{
+      height:100% !important;
       object-fit:cover;
-      height: 100%;
-    }
+      }
   }
 </style>
