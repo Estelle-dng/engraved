@@ -13,6 +13,7 @@
           <q-input
             type="email"
             v-model="form.email"
+            color="grey-10"
             label="Email *"
             lazy-rules
             :rules="[val => (val && val.length > 0) || 'Please type your email']"
@@ -35,7 +36,8 @@
 
 <script>
 import { join } from "path";
-import { getAuth } from "firebase/auth";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+const auth = getAuth();
 export default {
   name: "ForgotPassword",
   data (){
@@ -47,8 +49,27 @@ export default {
   },
   methods: {
     resetPassword () {
-      userEmail = this.form.email;
-      //TODO
+      let userEmail = this.form.email;
+      sendPasswordResetEmail(auth, userEmail)
+      .then(() => {
+        this.$q.notify({
+            color: 'green-4',
+            textColor: 'white',
+            icon: 'cloud_done',
+            message: 'Check you emails !'
+          })
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        this.$q.notify({
+            color: 'red-7',
+            textColor: 'white',
+            icon: 'cloud_done',
+            message: 'Error : '+ errorMessage,
+          })
+      });
+
     }
   }
 }
