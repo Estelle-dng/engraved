@@ -149,7 +149,7 @@ export default {
   .banner{max-height: 300px;}
   .follow{max-height: 36px;}
   .card-img{
-    height: 300px;
+    height: 300px !important;
     .q-img{
       height:100% !important;
       object-fit:cover;

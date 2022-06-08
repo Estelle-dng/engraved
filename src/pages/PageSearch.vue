@@ -34,7 +34,7 @@
           </q-avatar>
         </q-item-section>
         <q-item-section>
-          <router-link class="title" :to="{ name: 'Tattoist', params: { id : post.id} }">{{post.userName}}</router-link>
+          <p class="title">{{post.userName}}</p>
           <q-item-label caption>
             <q-icon v-if="post.location"
             name="eva-pin-outline"
