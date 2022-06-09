@@ -66,7 +66,7 @@
       <q-item>
         <q-item-section avatar>
           <q-avatar>
-            <img v-if="post.userPhoto" :src="post.userPhoto"/>
+            <img class="user-photo" v-if="post.userPhoto" :src="post.userPhoto"/>
             <img v-else src="icons/icon-128x128.png">
           </q-avatar>
         </q-item-section>
@@ -327,6 +327,11 @@ export default {
     @media (min-width: $breakpoint-md-min) {
       width: 32% !important;
       margin: 0 auto 16px auto;
+    }
+    .user-photo{
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
     }
     .q-img{
       height: 300px;

@@ -29,7 +29,7 @@
       <q-item>
         <q-item-section avatar>
           <q-avatar>
-            <img v-if="post.userPhoto" :src="post.userPhoto"/>
+            <img class="user-photo" v-if="post.userPhoto" :src="post.userPhoto"/>
             <img v-else src="icons/icon-128x128.png">
           </q-avatar>
         </q-item-section>
@@ -136,7 +136,13 @@ export default {
     }
     .q-img{
       min-height: 200px;
+      height: 300px;
       max-height: 500px;
+    }
+    .user-photo {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
     }
     .title{
       font-weight: 700;

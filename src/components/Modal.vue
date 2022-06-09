@@ -81,18 +81,19 @@ export default {
 </script>
 
 <style lang="scss">
-.modale{
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  max-height: 100vh;
-  max-width: 100vw;
-  background-color: rgba($color: #000000, $alpha: 0.7);
-  .card{
+  .modale{
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    max-height: 100vh;
+    max-width: 100vw;
+    background-color: rgba($color: #000000, $alpha: 0.7);
+  }
+ .card{
     width: 70vw;
     max-width: 300px;
-    }
-}
+    .q-img{max-height: 300px;}
+  }
 </style>
