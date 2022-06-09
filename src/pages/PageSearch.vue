@@ -114,6 +114,10 @@ export default {
       }
       catch(e){
         this.$q.loading.hide();
+        this.$q.dialog({
+          title: 'Error',
+          message: 'Could not find posts',
+        });
       }
     },
     getUniqueListBy(arr, key) {

@@ -161,7 +161,12 @@ export default {
             this.booking = user.booking ? user.booking : this.booking;
             this.baseUrl = user.photo ? user.photo : this.baseUrl;
 
-          }).catch(err => {console.log('error : ', err);});
+          }).catch(err => {
+            this.$q.dialog({
+              title: 'Error',
+              message: 'Could not get user data',
+            });
+          });
         } else {
           this.$router.push('/auth');
         }

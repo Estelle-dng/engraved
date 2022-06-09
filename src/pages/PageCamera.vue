@@ -141,7 +141,7 @@ export default {
         video : true
       }).then(stream =>{
         this.$refs.capture.srcObject = stream;
-      }).catch(error => {
+      }).catch((error) => {
         this.hasCameraSupport = false;
       });
     },

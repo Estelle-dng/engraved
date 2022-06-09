@@ -134,7 +134,6 @@ export default {
             const userInfo = result.user;
             const user = doc(db, 'users', auth.currentUser.uid);
             setDoc(user, { name: userInfo.displayName, tattoist : false, photo: userInfo.photoURL }, { merge: true });
-            // ...
             this.$router.push('/');
             this.$q.notify({
               message: 'User logged!',
@@ -143,9 +142,14 @@ export default {
               ]
             })
           }).catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            const email = error.email;
+            this.$q.notify({
+              color: 'red',
+              textColor: 'white',
+              message: error.message,
+              actions: [
+                { label: 'Dismiss', color: 'white' }
+              ]
+            })
             const credential = GoogleAuthProvider.credentialFromError(error);
           });
         });
@@ -167,16 +171,21 @@ export default {
         this.$q.loading.hide();
       })
       .catch((error) => {
+        let errorMessage = error.message;
         if(error.code == "auth/wrong-password"){
+          errorMessage = "Wrong password.";
           this.isValid = false;
-          this.errorMessage = "Wrong password."
-        }
-        if(error.code == "auth/too-many-requests"){
-          this.isValid = false;
-          this.errorMessage = "Too failed many requests, please try later"
+        } else if (error.code == "auth/too-many-requests"){
+          errorMessage = "Too failed many requests, please try later";
+        } else if (error.code == "auth/user-not-found") {
+          errorMessage = "Wrong email."
+        } else {
+          errorMessage = "Unexpected error. Please contact support.";
         }
         this.$q.notify({
-            message: error.message,
+            color: 'red',
+            textColor: 'white',
+            message: errorMessage,
             actions: [
               { label: 'Dismiss', color: 'white' }
             ]
@@ -205,9 +214,21 @@ export default {
           this.$router.push('/auth');
         })
         .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.log('error : ', errorCode, " /// error : ", errorMessage);
+          let errorMessage = error.message;
+          if (error.code == "auth/email-already-in-use") {
+            errorMessage = "Email already used.";
+          } else if (error.code == "auth/invalid-email") {
+            errorMessage = "Invalid Email format.";
+          }
+          this.$q.notify({
+            color: 'red',
+            textColor: 'white',
+            message: errorMessage,
+            actions: [
+              { label: 'Dismiss', color: 'white' }
+            ]
+          })
+
           this.$q.loading.hide();
         });
     },

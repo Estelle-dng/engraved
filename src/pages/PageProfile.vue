@@ -106,7 +106,13 @@ export default {
             this.banner = getUser.photo;
             this.booking = getUser.booking;
             this.tattoist = getUser.tattoist;
-          }).catch(err => {console.log('error : ', err);});
+          }).catch(err => {
+            console.log('error : ', err);
+            this.$q.dialog({
+              title: 'Error',
+              message: 'Could not find user data',
+            });
+          });
           this.getPosts();
         } else {
           this.$router.push('/auth');
@@ -116,9 +122,16 @@ export default {
     async getPosts(){
         const q = query(posts , where("userId", "==", getAuth().currentUser.uid), orderBy("date", "desc"));
         const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-          this.posts.push(doc.data());
-        });
+        try{
+          querySnapshot.forEach((doc) => {
+            this.posts.push(doc.data());
+          });
+        }catch{
+          this.$q.dialog({
+            title: 'Error',
+            message: 'Could not find posts',
+          });
+        }
     },
     openModal(data) {
       this.modalData = data;

@@ -78,15 +78,27 @@ export default {
             this.location = user.location;
             this.banner = user.photo;
             this.booking = user.booking;
-          }).catch(err => {console.log('error : ', err);});
+          }).catch(err => {
+            this.$q.dialog({
+              title: 'Error',
+              message: 'Could not find user data',
+            });
+          });
           this.getPosts(selectedUid);
     },
     async getPosts(selectedUid){
         const q = query(posts , where("userId", "==", selectedUid), orderBy('date', 'desc'));
         const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
+        try{
+          querySnapshot.forEach((doc) => {
           this.posts.push(doc.data());
         });
+        }catch{
+          this.$q.dialog({
+            title: 'Error',
+            message: 'Could not find posts',
+          });
+        }
     },
     openModal(data) {
       this.modalData = data;
