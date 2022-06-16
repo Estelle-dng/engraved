@@ -77,7 +77,8 @@
 
 <script>
 import { date } from 'quasar';
-import { collection, query, where, getDocs, getFirestore } from "firebase/firestore";
+import { collection, query, where, getDocs, getFirestore, orderBy } from "firebase/firestore";
+import _ from 'lodash';
 const db = getFirestore();
 const posts = collection(db, "posts");
 export default {
@@ -96,20 +97,25 @@ export default {
         this.posts = [];
         const q = query(posts, where("hashtags", "array-contains", this.search));
         const u = query(posts, where("userName", "==", this.search));
-        //const l = query(posts, where("location", ">=", this.search));
+        const l = query(posts, where("location", ">=", this.search));
         const querySnapshot = await getDocs(q);
         const querySnapshotUsers = await getDocs(u);
-        //const querySnapshotLoc = await getDocs(l);
+        const querySnapshotLoc = await getDocs(l);
         querySnapshot.forEach((doc) => {
           this.posts.push(doc.data());
         });
         querySnapshotUsers.forEach((doc) => {
           this.posts.push(doc.data());
         });
-        /* querySnapshotLoc.forEach((doc) => {
+        querySnapshotLoc.forEach((doc) => {
           this.posts.push(doc.data());
-        }); */
-        this.posts = this.getUniqueListBy(this.posts, 'id');
+        });
+        let Uposts = this.getUniqueListBy(this.posts, 'id');
+
+        //this.posts = _.sortBy({ posts }, { date });
+        this.posts = _.orderBy(Uposts, [(obj) => new Date(obj.date)], ['desc'])
+
+        console.log(this.posts);
         this.$q.loading.hide();
       }
       catch(e){
