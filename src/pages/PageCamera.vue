@@ -55,6 +55,8 @@
           <q-icon name="upload"/>
         </template>
       </q-file>
+
+      <!-- <q-btn @click="uploadImage()">test</q-btn> -->
     </div>
     <div class="row justify-center q-ma-md">
         <q-input
@@ -105,6 +107,11 @@
 <script>
 import { uid } from 'quasar';
 import { getAuth} from "firebase/auth";
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"
+import { uuid } from 'uuidv4';
+const storage = getStorage();
+const db = getFirestore();
 const auth = getAuth();
 require('md-gum-polyfill');
 export default {
@@ -136,6 +143,9 @@ export default {
     },
   },
   methods: {
+    test(){
+      console.log(this.post.img);
+    },
     initCamemra(){
       navigator.mediaDevices.getUserMedia({
         video : true
@@ -246,57 +256,76 @@ export default {
       });
       this.locationLoading = false;
     },
-    addPost() {
-      this.$q.loading.show();
-
-      let postCreated = this.$q.localStorage.getItem('postCreated');
-
-      if (this.$q.platform.is.android && !postCreated && !navigator.onLine) {
-        this.addPostError()
-        this.$q.loading.hide()
-      }else{
-        let formData = new FormData()
-        formData.append('id', this.post.id)
-        formData.append('caption', this.post.caption)
-        formData.append('location', this.post.location)
-        formData.append('date', this.post.date)
-        formData.append('userId', auth.currentUser.uid)
-        formData.append('file', this.post.img, this.post.id + '.png')
-        formData.append('hashtags', this.post.hashtags)
-
-        this.$axios.post(`${ process.env.API }/createPost`, formData).then(response => {
-          this.$q.localStorage.set('postCreated', true);
-          this.$router.push('/');
-          this.$q.notify({
-            message: 'Post created!',
-            actions: [
-              { label: 'Dismiss', color: 'white' }
-            ]
-          })
-          this.$q.loading.hide();
-          if(this.$q.platform.is.safari){
-            setTimeout(() => {
-              window.location.href = '/';
-            }, 1000);
-          }
-        }).catch(err => {
-          if (!navigator.onLine && this.backgroundSyncSupported && postCreated) {
-            this.$q.notify('Post created offline');
-            this.$router.push('/');
-          }
-          else {
-           this.addPostError();
-          }
-          this.$q.loading.hide();
-        })
-      }
-    },
-    addPostError() {
+    addpostError(err) {
       this.$q.dialog({
-        title: 'Error',
+        title: err,
         message: 'Sorry, could not create post!'
       })
-    }
+    },
+    async getUserInfo(){
+      const query = await getDoc(doc(db, "users", auth.currentUser.uid));
+      try {
+        const data = query.data();
+        return data;
+      }catch {
+        this.$q.dialog({
+          title: "Error",
+          message: 'Could not find current user data',
+        });
+      }
+    },
+    async uploadImage(){
+      try {
+        const file = this.post.img;
+        const token = uuid();
+        const storageRef = ref(storage, token);
+        const snapshot = await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        return downloadURL;
+      } catch {
+        this.$q.dialog({
+          title: 'Error',
+          message: 'Could not upload image',
+        });
+       }
+    },
+    async addPost(){
+
+      this.$q.loading.show();
+
+      const userInfo = await this.getUserInfo();
+      const photoUrl = await this.uploadImage();
+      const docData = {
+        id: this.post.id,
+        caption: this.post.caption,
+        location: this.post.location,
+        date: parseInt(this.post.date),
+        imageUrl: photoUrl,
+        userId: auth.currentUser.uid,
+        hashtags: this.post.hashtags,
+        userName: userInfo.name,
+        userPhoto: userInfo.photo ? userInfo.photo : ''
+      };
+
+      setDoc(doc(db, "posts", this.post.id), docData).then(() => {
+        this.$q.loading.hide();
+        this.$router.push('/');
+        if (this.$q.platform.is.safari) {
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 1000);
+        }
+        this.$q.notify({
+          message: 'Post created!',
+          actions: [
+            { label: 'Dismiss', color: 'white' }
+          ]
+        });
+      }).catch(err => {
+        this.$q.loading.hide();
+        this.addPostError();
+      });
+    },
   },
   mounted(){
     this.initCamemra();

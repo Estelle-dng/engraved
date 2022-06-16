@@ -19,6 +19,7 @@
     "idb": "^7.0.1",
     "md-gum-polyfill": "^1.0.0",
     "quasar": "^1.0.0",
+    "uuid-v4": "^0.1.0",
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {
