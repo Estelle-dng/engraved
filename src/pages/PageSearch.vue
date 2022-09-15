@@ -111,11 +111,8 @@ export default {
           this.posts.push(doc.data());
         });
         let Uposts = this.getUniqueListBy(this.posts, 'id');
-
-        //this.posts = _.sortBy({ posts }, { date });
         this.posts = _.orderBy(Uposts, [(obj) => new Date(obj.date)], ['desc'])
 
-        console.log(this.posts);
         this.$q.loading.hide();
       }
       catch(e){
