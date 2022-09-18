@@ -28,10 +28,10 @@ export default function (/* { store, ssrContext } */) {
 
   Router.beforeEach((to, from, next) => {
     if (
-      to.matched.some((record) => record.meta.requireAuth) &&
-      !store.getters["auth/isSignedIn"]
+      to.matched.some((record) => record.meta.requiresAuth) &&
+      !getAuth().currentUser
     ) {
-      next({ name: "account-signin", query: { next: to.fullPath } });
+      next({ name: "Auth", query: { next: to.fullPath } });
     } else {
       next();
     }
