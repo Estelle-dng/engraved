@@ -90,7 +90,7 @@
             label="Hashtag 1"
           />
         </div>
-        <div class="col-sm-3 col-xs-6 q-pa-sm">
+        <div class="col-sm-3 col-xs-6 q-pa-sm" v-if="post.hashtags[0]">
           <q-input
             clearable
             filled
@@ -99,7 +99,10 @@
             label="Hashtag 2"
           />
         </div>
-        <div class="col-sm-3 col-xs-6 q-pa-sm">
+        <div
+          class="col-sm-3 col-xs-6 q-pa-sm"
+          v-if="post.hashtags[0] && post.hashtags[1]"
+        >
           <q-input
             clearable
             filled
@@ -260,7 +263,7 @@ export default {
       this.disableCamera();
     },
     resetCamera() {
-      this.initCamemra();
+      this.initCamera();
       this.imageCaptured = false;
     },
     resetUpload() {
@@ -401,7 +404,7 @@ export default {
         date: parseInt(this.post.date),
         imageUrl: photoUrl,
         userId: auth.currentUser.uid,
-        hashtags: this.post.hashtags,
+        hashtags: this.post.hashtags.filter((x) => x !== null),
         userName: userInfo.name,
         userPhoto: userInfo.photo ? userInfo.photo : "",
       };
