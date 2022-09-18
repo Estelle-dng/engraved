@@ -87,13 +87,9 @@ export default {
     openModal(data) {
       this.modalData = data;
       this.modalVisible = true;
-      console.log(
-        "open modale : " + this.modalVisible + " /// data : " + data.caption
-      );
     },
     hideModal() {
       this.modalVisible = false;
-      console.log("hide modale : " + this.modalVisible);
     },
   },
   filters: {

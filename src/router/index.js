@@ -1,9 +1,9 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from "vue";
+import VueRouter from "vue-router";
 import { getAuth } from "firebase/auth";
-import routes from './routes'
+import routes from "./routes";
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 /*
  * If not building with SSR mode, you can
@@ -23,17 +23,19 @@ export default function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     mode: process.env.VUE_ROUTER_MODE,
-    base: process.env.VUE_ROUTER_BASE
+    base: process.env.VUE_ROUTER_BASE,
   });
 
-  Router.beforeEach(async (to, from, next) => {
-    const auth = to.meta.requiresAuth
-    if (auth && !getAuth().currentUser) {
-      next('/auth');
+  Router.beforeEach((to, from, next) => {
+    if (
+      to.matched.some((record) => record.meta.requireAuth) &&
+      !store.getters["auth/isSignedIn"]
+    ) {
+      next({ name: "account-signin", query: { next: to.fullPath } });
     } else {
       next();
     }
-  })
+  });
 
-  return Router
+  return Router;
 }

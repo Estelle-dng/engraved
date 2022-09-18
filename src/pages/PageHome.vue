@@ -56,7 +56,6 @@ import {
   getFirestore,
   orderBy,
 } from "firebase/firestore";
-let qs = require("qs");
 const db = getFirestore();
 const posts = collection(db, "posts");
 export default {

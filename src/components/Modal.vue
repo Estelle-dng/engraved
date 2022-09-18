@@ -88,6 +88,18 @@ export default {
     async deletePost() {
       let id = this.modalData.id;
       await deleteDoc(doc(db, "posts", id));
+
+      functions.firestore
+        .document("posts/{postId}")
+        .onDelete((snap, context) => {
+          const { postId } = context.params;
+          const bucket = firebase.storage().bucket();
+
+          return bucket.deleteFiles({
+            prefix: `images/${postId}`,
+          });
+        });
+
       this.$q.notify({
         message: "Post Deleted",
         actions: [{ label: "Dismiss", color: "white" }],
@@ -119,7 +131,7 @@ export default {
   background-color: rgba($color: #000000, $alpha: 0.7);
 }
 .card {
-  width: 70vw;
+  width: 600px;
   height: 80vh;
   object-fit: contain;
   .q-img {
