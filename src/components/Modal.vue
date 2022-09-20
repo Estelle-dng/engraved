@@ -74,6 +74,8 @@
 
 <script>
 import { doc, deleteDoc, getFirestore } from "firebase/firestore";
+import { getStorage, ref, deleteObject } from "firebase/storage";
+const storage = getStorage();
 const db = getFirestore();
 export default {
   name: "Modal",
@@ -89,15 +91,19 @@ export default {
       let id = this.modalData.id;
       await deleteDoc(doc(db, "posts", id));
 
-      functions.firestore
-        .document("posts/{postId}")
-        .onDelete((snap, context) => {
-          const { postId } = context.params;
-          const bucket = firebase.storage().bucket();
-
-          return bucket.deleteFiles({
-            prefix: `images/${postId}`,
-          });
+      const imageUrl = this.modalData.imageUrl;
+      // Create a reference to the file to delete
+      const picRef = ref(storage, imageUrl);
+      console.log(picRef);
+      // Delete the file
+      deleteObject(picRef)
+        .then(() => {
+          // File deleted successfully
+          alert("deleted");
+        })
+        .catch((error) => {
+          // Uh-oh, an error occurred!
+          alert("error");
         });
 
       this.$q.notify({
