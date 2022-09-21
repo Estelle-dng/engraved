@@ -320,6 +320,7 @@ export default {
     },
     locationSuccess(result) {
       this.post.location = result.data.city;
+      console.log(this.post.location);
       if (result.data.country) {
         this.post.location += `, ${result.data.country}`;
       }
@@ -402,11 +403,18 @@ export default {
         id: this.post.id,
         caption: this.post.caption,
         location: this.post.location,
+        lowerLocation: this.post.location.toLowerCase(),
         date: parseInt(this.post.date),
         imageUrl: photoUrl,
         userId: auth.currentUser.uid,
         hashtags: this.post.hashtags.filter((x) => x !== null),
+        lowerHashtags: this.post.hashtags
+          .filter((x) => x !== null)
+          .map((element) => {
+            return element.toLowerCase();
+          }),
         userName: userInfo.name,
+        lowerUserName: userInfo.name.toLowerCase(),
         userPhoto: userInfo.photo ? userInfo.photo : "",
       };
 

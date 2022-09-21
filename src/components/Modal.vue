@@ -99,11 +99,11 @@ export default {
       deleteObject(picRef)
         .then(() => {
           // File deleted successfully
-          alert("deleted");
+          return;
         })
         .catch((error) => {
           // Uh-oh, an error occurred!
-          alert("error");
+          console.log("error : could not delete picture from firestore");
         });
 
       this.$q.notify({
