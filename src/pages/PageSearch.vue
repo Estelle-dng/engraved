@@ -112,10 +112,17 @@ export default {
         this.posts = [];
         const q = query(
           posts,
-          where("hashtags", "array-contains", this.search)
+          where("lowerHashtags", "array-contains", this.search.toLowerCase())
         );
-        const u = query(posts, where("userName", "==", this.search));
-        const l = query(posts, where("location", ">=", this.search));
+        const u = query(
+          posts,
+          where("lowerUserName", "==", this.search.toLowerCase())
+        );
+        const l = query(
+          posts,
+          where("lowerLocation", ">=", this.search.toLowerCase()),
+          where("lowerLocation", "<=", this.search.toLowerCase() + "\uf8ff")
+        );
         const querySnapshot = await getDocs(q);
         const querySnapshotUsers = await getDocs(u);
         const querySnapshotLoc = await getDocs(l);

@@ -41,6 +41,7 @@
 </template>
 
 <script>
+let qs = require("qs");
 export default {
   name: "Notif",
   data() {

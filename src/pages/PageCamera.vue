@@ -150,11 +150,12 @@ import { uid } from "quasar";
 import { getAuth } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { uuid } from "uuidv4";
+import { v4 } from "uuid";
 const storage = getStorage();
 const db = getFirestore();
 const auth = getAuth();
 require("md-gum-polyfill");
+
 export default {
   name: "PageCamera",
   data() {
@@ -294,29 +295,6 @@ export default {
         track.stop();
       });
     },
-    dataURItoBlob(dataURI) {
-      // convert base64 to raw binary data held in a string
-      // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
-      var byteString = atob(dataURI.split(",")[1]);
-
-      // separate out the mime component
-      var mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
-
-      // write the bytes of the string to an ArrayBuffer
-      var ab = new ArrayBuffer(byteString.length);
-
-      // create a view into the buffer
-      var ia = new Uint8Array(ab);
-
-      // set the bytes of the buffer to the correct values
-      for (var i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-      }
-
-      // write the ArrayBuffer to a blob, and you're done
-      var blob = new Blob([ab], { type: mimeString });
-      return blob;
-    },
     getLocation() {
       this.locationLoading = true;
       navigator.geolocation.getCurrentPosition(
@@ -342,6 +320,7 @@ export default {
     },
     locationSuccess(result) {
       this.post.location = result.data.city;
+      console.log(this.post.location);
       if (result.data.country) {
         this.post.location += `, ${result.data.country}`;
       }
@@ -377,10 +356,33 @@ export default {
         });
       }
     },
+    dataURItoBlob(dataURI) {
+      // convert base64 to raw binary data held in a string
+      // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+      var byteString = atob(dataURI.split(",")[1]);
+
+      // separate out the mime component
+      var mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
+
+      // write the bytes of the string to an ArrayBuffer
+      var ab = new ArrayBuffer(byteString.length);
+
+      // create a view into the buffer
+      var ia = new Uint8Array(ab);
+
+      // set the bytes of the buffer to the correct values
+      for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+      }
+
+      // write the ArrayBuffer to a blob, and you're done
+      var blob = new Blob([ab], { type: mimeString });
+      return blob;
+    },
     async uploadImage() {
       try {
         const file = this.post.img;
-        const token = uuid();
+        const token = v4();
         const storageRef = ref(storage, token);
         const snapshot = await uploadBytes(storageRef, file);
         const downloadURL = await getDownloadURL(snapshot.ref);
@@ -401,11 +403,18 @@ export default {
         id: this.post.id,
         caption: this.post.caption,
         location: this.post.location,
+        lowerLocation: this.post.location.toLowerCase(),
         date: parseInt(this.post.date),
         imageUrl: photoUrl,
         userId: auth.currentUser.uid,
         hashtags: this.post.hashtags.filter((x) => x !== null),
+        lowerHashtags: this.post.hashtags
+          .filter((x) => x !== null)
+          .map((element) => {
+            return element.toLowerCase();
+          }),
         userName: userInfo.name,
+        lowerUserName: userInfo.name.toLowerCase(),
         userPhoto: userInfo.photo ? userInfo.photo : "",
       };
 

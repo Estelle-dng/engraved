@@ -74,6 +74,8 @@
 
 <script>
 import { doc, deleteDoc, getFirestore } from "firebase/firestore";
+import { getStorage, ref, deleteObject } from "firebase/storage";
+const storage = getStorage();
 const db = getFirestore();
 export default {
   name: "Modal",
@@ -88,6 +90,22 @@ export default {
     async deletePost() {
       let id = this.modalData.id;
       await deleteDoc(doc(db, "posts", id));
+
+      const imageUrl = this.modalData.imageUrl;
+      // Create a reference to the file to delete
+      const picRef = ref(storage, imageUrl);
+      console.log(picRef);
+      // Delete the file
+      deleteObject(picRef)
+        .then(() => {
+          // File deleted successfully
+          return;
+        })
+        .catch((error) => {
+          // Uh-oh, an error occurred!
+          console.log("error : could not delete picture from firestore");
+        });
+
       this.$q.notify({
         message: "Post Deleted",
         actions: [{ label: "Dismiss", color: "white" }],
@@ -119,7 +137,7 @@ export default {
   background-color: rgba($color: #000000, $alpha: 0.7);
 }
 .card {
-  width: 70vw;
+  width: 600px;
   height: 80vh;
   object-fit: contain;
   .q-img {
