@@ -320,7 +320,6 @@ export default {
     },
     locationSuccess(result) {
       this.post.location = result.data.city;
-      console.log(this.post.location);
       if (result.data.country) {
         this.post.location += `, ${result.data.country}`;
       }
